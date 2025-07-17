@@ -6,21 +6,31 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDRaisedButton
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
+from kivy.lang import Builder
+
 from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
+from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 
 # 日本語フォント設定
 LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
+
+# CardInfoScreen の .kv ファイル読み込み
+Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
 
 class MenuScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = MDBoxLayout(orientation='vertical', spacing=10, padding=20)
+
         layout.add_widget(MDLabel(text="デッキ分析ツール メインメニュー", halign="center", font_style="H5"))
+
+        layout.add_widget(MDRaisedButton(text="カード情報取得", on_press=lambda x: self.change_screen("card_info")))  # ← 追加
         layout.add_widget(MDRaisedButton(text="デッキ管理", on_press=lambda x: self.change_screen("deck")))
         layout.add_widget(MDRaisedButton(text="試合データ登録", on_press=lambda x: self.change_screen("match")))
         layout.add_widget(MDRaisedButton(text="統計表示", on_press=lambda x: self.change_screen("stats")))
         layout.add_widget(MDRaisedButton(text="終了", on_press=self.exit_app))
+
         self.add_widget(layout)
 
     def change_screen(self, screen_name):
@@ -57,6 +67,7 @@ class DeckAnalyzerApp(MDApp):
         self.theme_cls.primary_palette = "BlueGray"
         sm = MDScreenManager()
         sm.add_widget(MenuScreen(name="menu"))
+        sm.add_widget(CardInfoScreen(name="card_info"))  # ← 追加
         sm.add_widget(DeckManagerScreen(name="deck"))
         sm.add_widget(CardListScreen(name="card_list"))
         sm.add_widget(MatchRegisterScreen(name="match"))

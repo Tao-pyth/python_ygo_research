@@ -2,7 +2,7 @@ import sqlite3
 
 class DBHandler:
     def __init__(self, db_path='external_resource\db\ygo_data.db'):
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.initialize_tables()
 
@@ -22,18 +22,21 @@ class DBHandler:
         );
         """)
 
+        # image_path を含む cards_info テーブル
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS cards_info (
             name TEXT PRIMARY KEY,
             cid TEXT,
             card_text TEXT,
             info TEXT,
+            image_path TEXT,
             field_score INTEGER DEFAULT 0,
             hand_score INTEGER DEFAULT 0,
             grave_score INTEGER DEFAULT 0
         );
         """)
         self.conn.commit()
+
 
     def get_cards_by_deck(self, deck_name):
         self.cursor.execute("SELECT card_name, count FROM deck_cards WHERE deck_name = ?", (deck_name,))
@@ -100,3 +103,21 @@ class DBHandler:
                 if len(row) >= 2:
                     card_name, count = row[0], int(row[1])
                     self.add_card(deck_name, card_name, count)
+
+    # card_img_download.py
+    def upsert_card_info(self, name, cid, card_text, info, image_path=None):
+        self.cursor.execute("""
+            INSERT INTO cards_info (name, cid, card_text, info, image_path)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(name) DO UPDATE SET
+                cid=excluded.cid,
+                card_text=excluded.card_text,
+                info=excluded.info,
+                image_path=excluded.image_path
+        """, (name, cid, card_text, info, image_path))
+        self.conn.commit()
+
+    # card_img_download.py
+    def cid_exists(self, cid):
+        self.cursor.execute("SELECT 1 FROM cards_info WHERE cid = ?", (cid,))
+        return self.cursor.fetchone() is not None

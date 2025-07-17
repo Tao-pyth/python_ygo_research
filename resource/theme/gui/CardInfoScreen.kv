@@ -1,0 +1,65 @@
+<CardInfoScreen>:
+    name: "card_info"
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(15)
+
+        MDLabel:
+            text: "カード情報取得"
+            halign: "center"
+            font_style: "H5"
+
+        MDTextField:
+            id: card_name_input
+            hint_text: "カード名を入力"
+            mode: "rectangle"
+
+        MDTextField:
+            id: deck_url_input
+            hint_text: "デッキURLを入力"
+            mode: "rectangle"
+            opacity: 0
+            disabled: True
+
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(20)
+            MDCheckbox:
+                id: related_checkbox
+            MDLabel:
+                text: "関連カードも取得する"
+                valign: "center"
+
+        MDBoxLayout:
+            adaptive_height: True
+            spacing: dp(20)
+            MDCheckbox:
+                id: deck_checkbox
+                on_active: root.on_checkbox_toggle(*args)
+            MDLabel:
+                text: "デッキ情報をURLから取得する"
+                valign: "center"
+
+		MDLabel:
+			id: status_label
+			text: ""
+			halign: "center"
+			theme_text_color: "Secondary"
+
+		MDLabel:
+			id: last_saved_label
+			text: ""
+			halign: "center"
+			theme_text_color: "Hint"
+
+		MDRaisedButton:
+			id: retrieve_button
+			text: "取得する"
+			pos_hint: {"center_x": 0.5}
+			on_release: root.on_retrieve_pressed()
+
+		MDRaisedButton:
+			text: "戻る"
+			pos_hint: {"center_x": 0.5}
+			on_release: root.manager.current = "menu"
