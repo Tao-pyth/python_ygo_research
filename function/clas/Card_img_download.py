@@ -15,7 +15,7 @@ class CardImgDownload:
     def __init__(self,
                  chromedriver_path=r'D:\\_user_template_\\Documents\\PG\\python_game_play_ygo_3\\resource\\chromedriver-win32\\chromedriver.exe',
                  save_dir=r"D:\\_user_template_\\Documents\\PG\\python_game_play_ygo_3\\resource\\image\\card",
-                 used_urls_file=r'D:\\_user_template_\\Documents\\PG\\python_game_play_ygo_3\\resource\\image\\used_urls.jso',
+                 used_urls_file=r'D:\\_user_template_\\Documents\\PG\\python_game_play_ygo_3\\resource\\image\\used_urls.json',
                  card_info_file=r'D:\\_user_template_\\Documents\\PG\\python_game_play_ygo_3\\resource\\image\\cards_info.json'):
 
         # 設定項目

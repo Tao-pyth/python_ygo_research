@@ -1,7 +1,11 @@
 import sqlite3
+import os
 
 class DBHandler:
-    def __init__(self, db_path='external_resource\db\ygo_data.db'):
+    def __init__(self, db_path=None):
+        if db_path is None:
+            db_path = os.path.join('external_resource', 'db', 'ygo_data.db')
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.initialize_tables()
@@ -100,3 +104,4 @@ class DBHandler:
                 if len(row) >= 2:
                     card_name, count = row[0], int(row[1])
                     self.add_card(deck_name, card_name, count)
+        self.conn.commit()
