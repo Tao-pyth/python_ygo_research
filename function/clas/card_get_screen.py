@@ -5,6 +5,10 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.dialog import MDDialog
 from function.core.db_handler import DBHandler
 from function.core.card_img_download import CardImgDownload
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 
 class CardInfoScreen(MDScreen):
@@ -63,10 +67,12 @@ class CardInfoScreen(MDScreen):
         self._show_dialog("完了", f"{len(urls)} 件のカードを登録しました。")
 
     def _process_deck_url(self, deck_url):
-        max_rounds = 3
+        related = self.ids.related_checkbox.active
+        max_rounds = 3 if related else 1
+
         for round_num in range(max_rounds):
             self._update_status(f"{round_num+1} 周目の取得中...")
-            urls = self.downloader.get_full_urls_from_input(deck_url)
+            urls = self._get_detail_urls_from_deck(deck_url)
             if not urls:
                 self._update_status("URLが無効かカードが見つかりません。")
                 return
@@ -77,11 +83,29 @@ class CardInfoScreen(MDScreen):
                 card_name = self.downloader.last_saved_card_name
                 self._update_last_saved(card_name)
 
-            if round_num < max_rounds - 1:
+            if related and round_num < max_rounds - 1:
                 self._update_status("待機中...（10秒）")
                 time.sleep(10)
 
-        self._show_dialog("完了", f"最大{max_rounds}回まで処理しました。")
+        self._show_dialog("完了", f"{max_rounds} 回の処理を完了しました。")
+
+    def _get_detail_urls_from_deck(self, deck_url):
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        driver = webdriver.Chrome(service=Service(self.downloader.chromedriver_path), options=chrome_options)
+
+        try:
+            driver.get(deck_url)
+            time.sleep(3)
+            inputs = driver.find_elements(By.CLASS_NAME, "link_value")
+            rel_urls = [i.get_attribute('value') for i in inputs]
+            full_urls = ["https://www.db.yugioh-card.com/" + u.replace('&request_locale=ja', '') for u in rel_urls if 'ope=2' in u]
+            return full_urls
+        except Exception as e:
+            print(f"URL取得エラー: {e}")
+            return []
+        finally:
+            driver.quit()
 
     def _update_status(self, msg):
         Clock.schedule_once(lambda dt: setattr(self.ids.status_label, "text", msg))
