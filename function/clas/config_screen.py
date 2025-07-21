@@ -10,8 +10,8 @@ from kivy.clock import Clock
 import os
 import shutil
 import logging
+from typing import Optional
 from function.core.logging_config import setup_logging
-
 setup_logging()
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,8 @@ PALETTES = [
 
 class ConfigScreen(MDScreen):
     config_handler: ConfigHandler = ObjectProperty()
-    color_menu: MDDropdownMenu | None = None
-    file_manager: MDFileManager | None = None
+    color_menu: Optional[MDDropdownMenu] = None
+    file_manager: Optional[MDFileManager] = None
 
     def on_pre_enter(self, *args):
         self.load_values()
