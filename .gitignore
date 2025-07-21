@@ -1,2 +1,4 @@
 /external_resource
 /data/log
+__pycache__/
+**/__pycache__/

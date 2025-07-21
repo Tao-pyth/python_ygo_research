@@ -50,6 +50,13 @@ class DBHandler:
         );
         """)
 
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS edit_card_info (
+            cid TEXT PRIMARY KEY,
+            eff_file_path TEXT
+        );
+        """)
+
         self.conn.commit()
 
     def get_cards_by_deck(self, deck_name):
@@ -200,3 +207,29 @@ class DBHandler:
         """
         self.cursor.execute("SELECT 1 FROM cards_info WHERE cid = ?", (cid,))
         return self.cursor.fetchone() is not None
+
+    def set_effect_file_path(self, cid, eff_file_path):
+        """
+        編集用カード情報のファイルパスを登録または更新
+        """
+        self.cursor.execute(
+            """
+            INSERT INTO edit_card_info (cid, eff_file_path)
+            VALUES (?, ?)
+            ON CONFLICT(cid) DO UPDATE SET
+                eff_file_path = excluded.eff_file_path
+            """,
+            (cid, eff_file_path),
+        )
+        self.conn.commit()
+
+    def get_effect_file_path(self, cid):
+        """
+        cid に紐づく編集用効果ファイルパスを取得
+        """
+        self.cursor.execute(
+            "SELECT eff_file_path FROM edit_card_info WHERE cid = ?",
+            (cid,),
+        )
+        result = self.cursor.fetchone()
+        return result[0] if result else None
