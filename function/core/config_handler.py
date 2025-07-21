@@ -2,10 +2,14 @@ import json
 import os
 from typing import Any, Dict
 
+DEFAULT_FONT_PATH = r"C:\\Windows\\Fonts\\msgothic.ttc"
+
 DEFAULT_CONFIG: Dict[str, Any] = {
     "animation_speed": 1.0,
     "max_display_cards": 50,
     "font_size_base": 16,
+    "use_custom_font": False,
+    "font_path": "",
     "theme_color": "Blue",
     "theme_style": "Light",
 }
