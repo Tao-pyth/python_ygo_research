@@ -1,7 +1,8 @@
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
-from kivy.core.text import LabelBase, DEFAULT_FONT
+from kivy.core.text import LabelBase
+from kivy.properties import StringProperty
 from kivy.core.window import Window
 from kivy.lang import Builder
 
@@ -22,10 +23,12 @@ from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
 from function.core.config_handler import ConfigHandler, DEFAULT_FONT_PATH
 
+CUSTOM_FONT_NAME = "MgenPlus"
+
 # Load configuration and register font
 config_handler = ConfigHandler()
 font_path = config_handler.config.get("font_path") if config_handler.config.get("use_custom_font") else DEFAULT_FONT_PATH
-LabelBase.register(DEFAULT_FONT, font_path)
+LabelBase.register(CUSTOM_FONT_NAME, font_path)
 
 # CardInfoScreen, DeckManagerScreen の .kv ファイル読み込み
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
@@ -55,9 +58,21 @@ class StatsScreen(MDScreen):
         self.manager.current = screen_name
 
 class DeckAnalyzerApp(MDApp):
+    font_name = StringProperty(CUSTOM_FONT_NAME)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.config_handler = config_handler
+        self._font_index = 0
+        self.apply_font()
+
+    def apply_font(self):
+        cfg = self.config_handler.config
+        path = cfg.get("font_path") if cfg.get("use_custom_font") else DEFAULT_FONT_PATH
+        self._font_index += 1
+        name = f"{CUSTOM_FONT_NAME}{self._font_index}"
+        LabelBase.register(name, path)
+        self.font_name = name
 
     def build(self):
         cfg = self.config_handler.config
