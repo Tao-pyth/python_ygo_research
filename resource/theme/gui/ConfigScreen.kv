@@ -63,9 +63,10 @@
                 size_hint_x: 0.5
                 valign: 'center'
             MDRaisedButton:
+                id: color_menu_btn
                 text: 'テーマ変更'
                 size_hint_x: 0.5
-                on_release: root.open_theme_picker()
+                on_release: root.open_color_menu()
 
         BoxLayout:
             orientation: 'horizontal'
