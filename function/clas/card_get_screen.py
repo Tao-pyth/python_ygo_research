@@ -1,5 +1,5 @@
 import threading
-import time
+import time,os
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.screen import MDScreen
@@ -44,6 +44,7 @@ class CardInfoScreen(MDScreen):
         self.ids.retrieve_button.disabled = True
         self.ids.status_label.text = "処理を開始します..."
         self.ids.last_saved_label.text = ""
+        self.ids.last_saved_image.source = ""
         threading.Thread(target=self._start_download_process).start()
 
     def _start_download_process(self):
@@ -94,19 +95,33 @@ class CardInfoScreen(MDScreen):
             card_name = self.downloader.capture_card_image(detail_url)
             if card_name:
                 self._update_last_saved(card_name)
+                cid = self.db_handler.get_cid_by_card_name(card_name)
+                if cid:
+                    image_path = f"external_resource/image/{cid}.png"
+                    self._update_last_saved_image(image_path)
+                self._update_last_saved(card_name)
                 if self.mode == "deck" and hasattr(self, "_card_list"):
                     self._card_list.append(card_name)
         self._show_dialog("完了", "カードの取得を完了しました。")
 
     def _register_deck(self, deck_name):
         self.db_handler.create_deck(deck_name)
-        counts = {}
-        for card in getattr(self, "_card_list", []):
-            counts[card] = counts.get(card, 0) + 1
-        for card_name, count in counts.items():
-            self.db_handler.add_card(deck_name, card_name, count)
+
+        # deck_url を再取得
+        deck_tab = self._tab_map.get("deck")
+        deck_url = deck_tab.ids.deck_url_input.text.strip()
+
+        # deck内カードの cid をカウント取得
+        print(f"[DEBUG *]=== 登録処理開始 for deck: {deck_name} ===")
+        cid_counter = self.downloader.get_card_counts_from_page(deck_url)
+        print(f"[DEBUG *]取得したカードCIDと枚数: {cid_counter}")
+        for cid, count in cid_counter.items():
+            card_name = self.db_handler.get_card_name_by_cid(f"cid{cid}")
+            print(f"[DEBUG *]cid {cid} → card_name: {card_name}") 
+            if card_name:
+                self.db_handler.add_card(deck_name, card_name, count)
+
         self._update_status(f"デッキ「{deck_name}」として登録しました。")
-        self._card_list.clear()
 
     def _update_status(self, msg):
         Clock.schedule_once(lambda dt: setattr(self.ids.status_label, "text", msg))
@@ -114,6 +129,13 @@ class CardInfoScreen(MDScreen):
     def _update_last_saved(self, name):
         if name:
             Clock.schedule_once(lambda dt: setattr(self.ids.last_saved_label, "text", f"直近保存: {name}"))
+
+    def _update_last_saved_image(self, image_path):
+        def _set_image(dt):
+            if os.path.exists(image_path):
+                self.ids.last_saved_image.source = image_path
+                self.ids.last_saved_image.reload()
+        Clock.schedule_once(_set_image)
 
     def _show_dialog(self, title, text):
         def open_dialog(dt):

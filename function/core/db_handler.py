@@ -65,6 +65,7 @@ class DBHandler:
         """
         デッキにカードを追加（既存なら加算）
         """
+        print(f"[DEBUG *]デッキ登録中: {deck_name=} {card_name=} {count=}")
         self.cursor.execute("SELECT count FROM deck_cards WHERE deck_name = ? AND card_name = ?", (deck_name, card_name))
         result = self.cursor.fetchone()
         if result:
@@ -108,6 +109,16 @@ class DBHandler:
             WHERE name_ja = ?
         """, (field, hand, grave, card_name))
         self.conn.commit()
+
+    def get_card_name_by_cid(self, cid):
+        self.cursor.execute("SELECT name_ja FROM cards_info WHERE cid = ?", (cid,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
+    def get_cid_by_card_name(self, card_name):
+        self.cursor.execute("SELECT cid FROM cards_info WHERE name_ja = ?", (card_name,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
 
     def get_all_decks(self):
         """

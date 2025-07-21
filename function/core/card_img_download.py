@@ -1,6 +1,7 @@
 import os
 import time
 import re
+from collections import Counter
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -24,7 +25,35 @@ class CardImgDownload:
 
     def get_card_urls_from_page(self, page_url):
         """
-        検索結果ページまたはデッキ構成ページからカード詳細URL一覧を抽出する
+        カード画像URL（img[src*="get_image.action?"]）から cid を抽出し、詳細URLを構築して返す。
+        """
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+
+        try:
+            driver.get(page_url)
+            time.sleep(2)
+            images = driver.find_elements(By.CSS_SELECTOR, 'img[src*="get_image.action?"]')
+            cid_set = set()
+            for img in images:
+                src = img.get_attribute("src")
+                if src:
+                    match = re.search(r'cid=(\d+)', src)
+                    if match:
+                        cid_set.add(match.group(1))
+
+            detail_urls = [f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid={cid}" for cid in cid_set]
+            return detail_urls
+        except Exception as e:
+            print(f"[DEBUG *]URL抽出エラー: {e}")
+            return []
+        finally:
+            driver.quit()
+
+    def get_card_counts_from_page(self, page_url):
+        """
+        デッキ構成ページから cid をカウントして返す
         """
         chrome_options = Options()
         chrome_options.add_argument("--headless=new")
@@ -33,16 +62,18 @@ class CardImgDownload:
         try:
             driver.get(page_url)
             time.sleep(3)
-            inputs = driver.find_elements(By.CLASS_NAME, "link_value")
-            rel_urls = [i.get_attribute('value') for i in inputs]
-            full_urls = [
-                "https://www.db.yugioh-card.com/" + u.replace('&request_locale=ja', '')
-                for u in rel_urls if 'ope=2' in u
-            ]
-            return full_urls
+            images = driver.find_elements(By.CSS_SELECTOR, 'img[src*="card_search.action?ope=2&cid="]')
+            urls = [img.get_attribute("src") for img in images if img.get_attribute("src")]
+            cids = []
+            for url in urls:
+                match = re.search(r'cid=(\d+)', url)
+                if match:
+                    cid = match.group(1)
+                    cids.append(cid)
+            return Counter(cids)
         except Exception as e:
-            print(f"URL取得エラー: {e}")
-            return []
+            print(f"[DEBUG *]URL取得エラー: {e}")
+            return Counter()
         finally:
             driver.quit()
 
@@ -62,7 +93,7 @@ class CardImgDownload:
                 return combined_text.split("Card Text")[0].strip()
             return combined_text.strip()
         except Exception as e:
-            print(f"カード情報取得エラー: {e}")
+            print(f"[DEBUG *]カード情報取得エラー: {e}")
             return ""
 
     def capture_card_image(self, base_url):
@@ -71,12 +102,13 @@ class CardImgDownload:
         """
         cid_match = re.search(r'cid=(\d+)', base_url)
         if not cid_match:
-            print(f"URL形式不正: {base_url}")
-            return
+            print(f"[DEBUG *]URL形式不正: {base_url}")
+            return None
+
         cid = "cid" + cid_match.group(1)
         if self.db_handler.cid_exists(cid):
-            print(f"{cid} はすでに登録済みです。スキップ。")
-            return
+            print(f"[DEBUG *]{cid} はすでに登録済みです。スキップ。")
+            return self.db_handler.get_card_name_by_cid(cid)  # ← card_name を返して登録継続
 
         data = {}
         for lang in ["ja", "en"]:
@@ -87,7 +119,7 @@ class CardImgDownload:
             driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
             try:
                 driver.get(url)
-                time.sleep(4)
+                time.sleep(2)
 
                 if lang == "ja":
                     ActionChains(driver).move_to_element(driver.find_element(By.ID, "card_frame")).click().perform()
@@ -118,16 +150,16 @@ class CardImgDownload:
                     cropped = img.crop((470, 200, 775, 635))
                     image_path = os.path.join(self.save_dir, f"{cid}.png")
                     cropped.save(image_path)
-                    print(f"画像保存: {image_path}")
+                    print(f"[DEBUG *]画像保存: {image_path}")
                     data["image_path"] = image_path
                     self.last_saved_card_name = data["name_ja"]
 
             except Exception as e:
-                print(f"{lang}ページ処理中エラー: {e}")
+                print(f"[DEBUG *]{lang}ページ処理中エラー: {e}")
             finally:
                 driver.quit()
 
-        # DB登録
+        # DB登録（ja/en両方取得後）
         self.db_handler.upsert_card_info(
             cid=cid,
             name_ja=data.get("name_ja", ""),
@@ -138,3 +170,5 @@ class CardImgDownload:
             info_en=data.get("card_info_en", ""),
             image_path=data.get("image_path", "")
         )
+
+        return self.last_saved_card_name

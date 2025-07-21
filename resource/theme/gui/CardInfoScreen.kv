@@ -1,15 +1,14 @@
 # CardInfoScreen.kv
 <CardNameTab>:
     orientation: 'vertical'
-    padding: 10
     spacing: 10
     md_bg_color: 0.96, 0.96, 0.96, 1  # タブ背景色調整
 
     MDTextField:
         id: card_name_input
+        size_hint_y: 1
         hint_text: "カード名を入力"
         mode: "rectangle"
-        size_hint_x: 1
     BoxLayout:
         id: card_option_box
         orientation: 'horizontal'
@@ -19,33 +18,30 @@
 
 <DeckURLTab>:
     orientation: 'vertical'
-    padding: 10
     spacing: 10
     md_bg_color: 0.96, 0.96, 0.96, 1
-
     MDTextField:
         id: deck_url_input
+        size_hint_y: 1
         hint_text: "デッキURLを入力"
         mode: "rectangle"
-        size_hint_x: 1
-
     BoxLayout:
         id: deck_option_box
-        orientation: 'horizontal'
         size_hint_y: 1
-        height: "60dp"  # 固定でずれ防止
+        orientation: 'horizontal'
         MDCheckbox:
             id: register_deck_checkbox
-            size_hint_x: 0.3
+            size_hint_x: 1
             on_active: app.root.get_screen('card_info').on_register_checkbox(self, self.active)
         MDLabel:
-            size_hint_x: 0.4
+            size_hint_x: 2
             text: "取得したカードをデッキとして登録する"
         MDTextField:
             id: deck_name_input
+            size_hint_x: 2
             hint_text: "デッキ名"
-            size_hint_x: 0.3
             disabled: True
+
 
 <CardInfoScreen>:
     BoxLayout:
@@ -53,7 +49,7 @@
 
         # タイトル領域（15%）
         BoxLayout:
-            size_hint_y: 0.15
+            size_hint_y: 1.5
             padding: 10
             MDLabel:
                 text: "カード情報取得"
@@ -62,6 +58,7 @@
 
         # タブ（60%）
         MDTabs:
+            size_hint_y: 4
             id: tabs
             on_tab_switch: root.on_tab_switch(*args)
             background_color: 0.75, 0.75, 0.75, 1
@@ -75,39 +72,61 @@
 
         # 関連カード取得領域（10%）
         BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: 0.1
-            spacing: 10
-            padding: 10
+            orientation: 'horizontal'
+            size_hint_y: 4
             # ステータス表示
-            MDLabel:
-                id: status_label
-                text: ""
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 2
+                MDLabel:
+                    halign: 'center'
+                    valign: 'center'
+                    id: status_label
+                    text: "#ステータス表示#"
 
-            MDLabel:
-                id: last_saved_label
-                text: ""
+                MDLabel:
+                    halign: 'center'
+                    valign: 'center'
+                    id: last_saved_label
+                    text: "--"
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 6
+                Image:
+                    id: last_saved_image
+                    size_hint: None, None
+                    allow_stretch: True
+                    keep_ratio: True
+                    source: ""  # 最初は空
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 2
+
         # ボタン領域（15%）
         BoxLayout:
             orientation: 'horizontal'
-            size_hint_y: 0.15
-            padding: 10
-            spacing: 10
-
+            size_hint_y: 1
             BoxLayout:
-                size_hint_x: 0.3
+                size_hint_x: 2
+            BoxLayout:
+                size_hint_x: 1
                 MDRaisedButton:
+                    pos_hint:{"center_x": .5, "center_y": .5}
                     text: "戻る"
                     md_bg_color: 0.9, 0.3, 0.3, 1
                     on_release: root.manager.current = 'menu'
-
             BoxLayout:
-                size_hint_x: 0.4
-
+                size_hint_x: 4
             BoxLayout:
-                size_hint_x: 0.3
+                size_hint_x: 1
                 MDRaisedButton:
+                    pos_hint:{"center_x": .5, "center_y": .5}
                     text: "取得する"
                     md_bg_color: 0, 0.6, 0.8, 1
                     on_release: root.on_retrieve_pressed()
                     id: retrieve_button
+            BoxLayout:
+                size_hint_x: 2
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
