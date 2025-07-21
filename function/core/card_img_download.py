@@ -67,14 +67,15 @@ class CardImgDownload:
         try:
             driver.get(page_url)
             time.sleep(3)
-            images = driver.find_elements(By.CSS_SELECTOR, 'img[src*="card_search.action?ope=2&cid="]')
-            urls = [img.get_attribute("src") for img in images if img.get_attribute("src")]
+
+            # <a href="...card_search.action?ope=2&cid=XXXX..."> を拾う
+            anchors = driver.find_elements(By.CSS_SELECTOR, 'a[href*="card_search.action?ope=2&cid="]')
             cids = []
-            for url in urls:
-                match = re.search(r'cid=(\d+)', url)
+            for a in anchors:
+                href = a.get_attribute("href")
+                match = re.search(r'cid=(\d+)', href)
                 if match:
-                    cid = match.group(1)
-                    cids.append(cid)
+                    cids.append(match.group(1))
             return Counter(cids)
         except Exception as e:
             logger.error(f"URL取得エラー: {e}")
