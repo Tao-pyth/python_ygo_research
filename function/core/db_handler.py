@@ -94,6 +94,29 @@ class DBHandler:
         self.cursor.execute("DELETE FROM deck_cards WHERE deck_name = ? AND card_name = ?", (deck_name, card_name))
         self.conn.commit()
 
+    def adjust_card_count(self, deck_name, card_name, delta):
+        """
+        指定カードの枚数を増減する。結果が0以下なら行を削除
+        """
+        self.cursor.execute(
+            "SELECT count FROM deck_cards WHERE deck_name = ? AND card_name = ?",
+            (deck_name, card_name),
+        )
+        row = self.cursor.fetchone()
+        if row:
+            new_count = row[0] + delta
+            if new_count > 0:
+                self.cursor.execute(
+                    "UPDATE deck_cards SET count = ? WHERE deck_name = ? AND card_name = ?",
+                    (new_count, deck_name, card_name),
+                )
+            else:
+                self.cursor.execute(
+                    "DELETE FROM deck_cards WHERE deck_name = ? AND card_name = ?",
+                    (deck_name, card_name),
+                )
+            self.conn.commit()
+
     def get_card_info(self, card_name):
         """
         指定されたカード名に対応するカード情報を取得
@@ -102,6 +125,31 @@ class DBHandler:
         result = self.cursor.fetchone()
         if result:
             return {"cid": result[0], "card_text": result[1], "info": result[2]}
+        return None
+
+    def get_full_card_info(self, card_name):
+        """
+        画像パスやスコアを含む詳細情報を取得
+        """
+        self.cursor.execute(
+            """
+            SELECT cid, card_text_ja, card_info_ja, image_path,
+                   field_score, hand_score, grave_score
+            FROM cards_info WHERE name_ja = ?
+            """,
+            (card_name,),
+        )
+        row = self.cursor.fetchone()
+        if row:
+            return {
+                "cid": row[0],
+                "card_text": row[1],
+                "info": row[2],
+                "image_path": row[3],
+                "field_score": row[4],
+                "hand_score": row[5],
+                "grave_score": row[6],
+            }
         return None
 
     def get_deck_usage_for_card(self, card_name):
@@ -200,3 +248,4 @@ class DBHandler:
         """
         self.cursor.execute("SELECT 1 FROM cards_info WHERE cid = ?", (cid,))
         return self.cursor.fetchone() is not None
+

@@ -6,9 +6,6 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.card import MDCard
 from kivymd.uix.textfield import MDTextField
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.button import MDFlatButton
 from kivy.metrics import dp
 from function.core.db_handler import DBHandler
 from kivy.core.text import DEFAULT_FONT
@@ -19,7 +16,6 @@ class CardListScreen(MDScreen):
         super().__init__(**kwargs)
         self.db = DBHandler()
         self.current_deck_name = None
-        self.dialog = None
 
         self.layout = MDBoxLayout(orientation='vertical', spacing=10, padding=10)
 
@@ -55,14 +51,23 @@ class CardListScreen(MDScreen):
 
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
             label = MDLabel(text=f"{card_name} x{count}", halign="left", font_name=DEFAULT_FONT)
+
+            minus_btn = MDIconButton(icon="minus", on_press=lambda x, name=card_name: self.change_card_count(name, -1))
+            plus_btn = MDIconButton(icon="plus", on_press=lambda x, name=card_name: self.change_card_count(name, 1))
             delete_btn = MDIconButton(icon="delete", on_press=lambda x, name=card_name: self.delete_card_from_deck(name))
-            delete_btn.theme_text_color = "Custom"
+
+            for btn in (minus_btn, plus_btn, delete_btn):
+                btn.theme_text_color = "Custom"
+                btn.text_color = (0.2, 0.2, 0.6, 1)
             delete_btn.text_color = (0.5, 0.2, 0.2, 1)
+
             row.add_widget(label)
+            row.add_widget(minus_btn)
+            row.add_widget(plus_btn)
             row.add_widget(delete_btn)
 
             card = MDCard(row, size_hint_y=None, height=dp(50), padding=10, md_bg_color=bg_color)
-            card.bind(on_release=lambda instance, name=card_name: self.show_card_detail(name))
+            card.bind(on_release=lambda instance, name=card_name: self.open_card_detail(name))
             self.grid.add_widget(card)
 
     def load_all_cards(self):
@@ -79,7 +84,7 @@ class CardListScreen(MDScreen):
             row.add_widget(delete_btn)
 
             card = MDCard(row, size_hint_y=None, height=dp(50), padding=10, md_bg_color=bg_color)
-            card.bind(on_release=lambda instance, name=card_name: self.show_card_detail(name))
+            card.bind(on_release=lambda instance, name=card_name: self.open_card_detail(name))
             self.grid.add_widget(card)
 
     def add_card_to_deck(self, instance):
@@ -100,47 +105,19 @@ class CardListScreen(MDScreen):
             self.db.remove_card(self.current_deck_name, card_name)
             self.load_deck(self.current_deck_name)
 
-    def show_card_detail(self, card_name):
-        card_info = self.db.get_card_info(card_name)
-        if not card_info:
-            card_info = {"cid": "", "card_text": "", "info": ""}
+    def open_card_detail(self, card_name):
+        detail_screen = self.manager.get_screen("card_detail")
+        detail_screen.load_card(card_name)
+        self.manager.current = "card_detail"
 
-        field_score = MDTextField(hint_text="フィールドスコア", input_filter="int", font_name=DEFAULT_FONT)
-        hand_score = MDTextField(hint_text="手札スコア", input_filter="int", font_name=DEFAULT_FONT)
-        grave_score = MDTextField(hint_text="墓地スコア", input_filter="int", font_name=DEFAULT_FONT)
-
-        content = MDBoxLayout(orientation="vertical", spacing=10, padding=10)
-        content.add_widget(MDLabel(text=f"カード名: {card_name}", font_name=DEFAULT_FONT))
-        content.add_widget(field_score)
-        content.add_widget(hand_score)
-        content.add_widget(grave_score)
-
-        decks = self.db.get_deck_usage_for_card(card_name)
-        for deck, count in decks:
-            label = MDLabel(text=f"{deck}：{count}枚", theme_text_color="Secondary", font_name=DEFAULT_FONT)
-            content.add_widget(label)
-
-        self.dialog = MDDialog(
-            title="カード詳細",
-            type="custom",
-            content_cls=content,
-            buttons=[
-                MDFlatButton(text="閉じる", on_release=lambda x: self.dialog.dismiss()),
-                MDRaisedButton(text="登録", on_release=lambda x: self.save_card_scores(card_name, field_score.text, hand_score.text, grave_score.text))
-            ]
-        )
-        self.dialog.open()
+    def change_card_count(self, card_name, delta):
+        if self.current_deck_name:
+            self.db.adjust_card_count(self.current_deck_name, card_name, delta)
+            self.load_deck(self.current_deck_name)
 
     def save_card_scores(self, card_name, field, hand, grave):
-        try:
-            f = int(field)
-            h = int(hand)
-            g = int(grave)
-            self.db.set_card_scores(card_name, field=f, hand=h, grave=g)
-        except ValueError:
-            pass
-        if self.dialog:
-            self.dialog.dismiss()
+        pass  # obsolete
 
     def go_back(self, instance):
         self.manager.current = "deck"
+
