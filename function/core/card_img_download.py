@@ -2,6 +2,8 @@ import os
 import time
 import re
 from collections import Counter
+import logging
+from function.core.logging_config import setup_logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -10,6 +12,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 from bs4 import BeautifulSoup
 from function.core.db_handler import DBHandler
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 class CardImgDownload:
@@ -46,7 +51,7 @@ class CardImgDownload:
             detail_urls = [f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid={cid}" for cid in cid_set]
             return detail_urls
         except Exception as e:
-            print(f"[DEBUG *]URL抽出エラー: {e}")
+            logger.error(f"URL抽出エラー: {e}")
             return []
         finally:
             driver.quit()
@@ -72,7 +77,7 @@ class CardImgDownload:
                     cids.append(cid)
             return Counter(cids)
         except Exception as e:
-            print(f"[DEBUG *]URL取得エラー: {e}")
+            logger.error(f"URL取得エラー: {e}")
             return Counter()
         finally:
             driver.quit()
@@ -93,7 +98,7 @@ class CardImgDownload:
                 return combined_text.split("Card Text")[0].strip()
             return combined_text.strip()
         except Exception as e:
-            print(f"[DEBUG *]カード情報取得エラー: {e}")
+            logger.error(f"カード情報取得エラー: {e}")
             return ""
 
     def capture_card_image(self, base_url):
@@ -102,12 +107,12 @@ class CardImgDownload:
         """
         cid_match = re.search(r'cid=(\d+)', base_url)
         if not cid_match:
-            print(f"[DEBUG *]URL形式不正: {base_url}")
+            logger.error(f"URL形式不正: {base_url}")
             return None
 
         cid = "cid" + cid_match.group(1)
         if self.db_handler.cid_exists(cid):
-            print(f"[DEBUG *]{cid} はすでに登録済みです。スキップ。")
+            logger.debug(f"{cid} はすでに登録済みです。スキップ。")
             return self.db_handler.get_card_name_by_cid(cid)  # ← card_name を返して登録継続
 
         data = {}
@@ -150,12 +155,12 @@ class CardImgDownload:
                     cropped = img.crop((470, 200, 775, 635))
                     image_path = os.path.join(self.save_dir, f"{cid}.png")
                     cropped.save(image_path)
-                    print(f"[DEBUG *]画像保存: {image_path}")
+                    logger.debug(f"画像保存: {image_path}")
                     data["image_path"] = image_path
                     self.last_saved_card_name = data["name_ja"]
 
             except Exception as e:
-                print(f"[DEBUG *]{lang}ページ処理中エラー: {e}")
+                logger.error(f"{lang}ページ処理中エラー: {e}")
             finally:
                 driver.quit()
 
