@@ -9,6 +9,7 @@
         size_hint_y: 1
         hint_text: "カード名を入力"
         mode: "rectangle"
+        font_name: app.font_name
     BoxLayout:
         id: card_option_box
         orientation: 'horizontal'
@@ -25,6 +26,7 @@
         size_hint_y: 1
         hint_text: "デッキURLを入力"
         mode: "rectangle"
+        font_name: app.font_name
     BoxLayout:
         id: deck_option_box
         size_hint_y: 1
@@ -36,11 +38,13 @@
         MDLabel:
             size_hint_x: 2
             text: "取得したカードをデッキとして登録する"
+            font_name: app.font_name
         MDTextField:
             id: deck_name_input
             size_hint_x: 2
             hint_text: "デッキ名"
             disabled: True
+            font_name: app.font_name
 
 
 <CardInfoScreen>:
@@ -55,6 +59,7 @@
                 text: "カード情報取得"
                 halign: "center"
                 font_style: "H5"
+                font_name: app.font_name
 
         # タブ（60%）
         MDTabs:
@@ -83,12 +88,14 @@
                     valign: 'center'
                     id: status_label
                     text: "#ステータス表示#"
+                    font_name: app.font_name
 
                 MDLabel:
                     halign: 'center'
                     valign: 'center'
                     id: last_saved_label
                     text: "--"
+                    font_name: app.font_name
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_x: 6
@@ -113,6 +120,7 @@
                 MDRaisedButton:
                     pos_hint:{"center_x": .5, "center_y": .5}
                     text: "戻る"
+                    font_name: app.font_name
                     md_bg_color: 0.9, 0.3, 0.3, 1
                     on_release: root.manager.current = 'menu'
             BoxLayout:
@@ -122,6 +130,7 @@
                 MDRaisedButton:
                     pos_hint:{"center_x": .5, "center_y": .5}
                     text: "取得する"
+                    font_name: app.font_name
                     md_bg_color: 0, 0.6, 0.8, 1
                     on_release: root.on_retrieve_pressed()
                     id: retrieve_button

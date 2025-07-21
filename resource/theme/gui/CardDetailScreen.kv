@@ -9,6 +9,7 @@
             text: ''
             halign: 'center'
             font_style: 'H5'
+            font_name: app.font_name
             size_hint_y: None
             height: dp(40)
 
@@ -48,14 +49,17 @@
                 id: field_score
                 hint_text: 'フィールド'
                 input_filter: 'int'
+                font_name: app.font_name
             MDTextField:
                 id: hand_score
                 hint_text: '手札'
                 input_filter: 'int'
+                font_name: app.font_name
             MDTextField:
                 id: grave_score
                 hint_text: '墓地'
                 input_filter: 'int'
+                font_name: app.font_name
 
         ScrollView:
             size_hint_y: 0.15
@@ -72,13 +76,16 @@
             spacing: 10
             MDRaisedButton:
                 text: '戻る'
+                font_name: app.font_name
                 on_release: root.manager.current = 'card_list'
                 md_bg_color: 0.7, 0.2, 0.2, 1
             MDRaisedButton:
                 text: 'カード効果を設定する'
+                font_name: app.font_name
                 on_release: root.open_effect_editor()
                 md_bg_color: 0.4, 0.4, 0.8, 1
             MDRaisedButton:
                 text: '保存'
+                font_name: app.font_name
                 on_release: root.save_scores()
                 md_bg_color: 0.2, 0.6, 0.2, 1
