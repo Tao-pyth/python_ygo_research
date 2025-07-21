@@ -1,4 +1,5 @@
 import sqlite3
+from function.core.logger import get_logger
 
 def clean_info_text(text, lang):
     if not text:
@@ -10,6 +11,7 @@ def clean_info_text(text, lang):
     return text.strip()
 
 def fix_existing_info_fields(db_path='external_resource/db/ygo_data.db'):
+    logger = get_logger(__name__)
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT cid, card_info_ja, card_info_en FROM cards_info")
@@ -23,13 +25,14 @@ def fix_existing_info_fields(db_path='external_resource/db/ygo_data.db'):
             SET card_info_ja = ?, card_info_en = ?
             WHERE cid = ?
         """, (fixed_ja, fixed_en, cid))
-        print(f"修正済: {cid}")
+        logger.info("修正済: %s", cid)
 
     conn.commit()
     conn.close()
-    print("すべての card_info フィールドを修正しました。")
+    logger.info("すべての card_info フィールドを修正しました。")
 
 if __name__ == "__main__":
     import kivy
-    print(kivy.__version__)
+    logger = get_logger(__name__)
+    logger.info(kivy.__version__)
     #fix_existing_info_fields()

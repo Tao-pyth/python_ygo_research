@@ -1,3 +1,4 @@
+from function.core.logger import get_logger
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
@@ -11,6 +12,8 @@ from kivy.lang import Builder
 from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
 from function.clas.card_get_screen import CardInfoScreen  # ← 追加
+
+logger = get_logger(__name__)
 
 # 日本語フォント設定
 LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
@@ -64,6 +67,7 @@ class StatsScreen(MDScreen):
 
 class DeckAnalyzerApp(MDApp):
     def build(self):
+        logger.info("DeckAnalyzerApp started")
         self.theme_cls.primary_palette = "BlueGray"
         sm = MDScreenManager()
         sm.add_widget(MenuScreen(name="menu"))

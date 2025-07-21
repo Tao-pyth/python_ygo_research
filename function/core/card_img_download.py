@@ -9,6 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 from bs4 import BeautifulSoup
 from function.core.db_handler import DBHandler
+from function.core.logger import get_logger
 
 
 class CardImgDownload:
@@ -21,6 +22,7 @@ class CardImgDownload:
         self.save_dir = save_dir
         self.last_saved_card_name = ""
         os.makedirs(self.save_dir, exist_ok=True)
+        self.logger = get_logger(__name__)
 
     def get_card_urls_from_page(self, page_url):
         """
@@ -41,7 +43,7 @@ class CardImgDownload:
             ]
             return full_urls
         except Exception as e:
-            print(f"URL取得エラー: {e}")
+            self.logger.error("URL取得エラー: %s", e)
             return []
         finally:
             driver.quit()
@@ -62,7 +64,7 @@ class CardImgDownload:
                 return combined_text.split("Card Text")[0].strip()
             return combined_text.strip()
         except Exception as e:
-            print(f"カード情報取得エラー: {e}")
+            self.logger.error("カード情報取得エラー: %s", e)
             return ""
 
     def capture_card_image(self, base_url):
@@ -71,11 +73,11 @@ class CardImgDownload:
         """
         cid_match = re.search(r'cid=(\d+)', base_url)
         if not cid_match:
-            print(f"URL形式不正: {base_url}")
+            self.logger.error("URL形式不正: %s", base_url)
             return
         cid = "cid" + cid_match.group(1)
         if self.db_handler.cid_exists(cid):
-            print(f"{cid} はすでに登録済みです。スキップ。")
+            self.logger.info("%s はすでに登録済みです。スキップ。", cid)
             return
 
         data = {}
@@ -118,12 +120,12 @@ class CardImgDownload:
                     cropped = img.crop((470, 200, 775, 635))
                     image_path = os.path.join(self.save_dir, f"{cid}.png")
                     cropped.save(image_path)
-                    print(f"画像保存: {image_path}")
+                    self.logger.info("画像保存: %s", image_path)
                     data["image_path"] = image_path
                     self.last_saved_card_name = data["name_ja"]
 
             except Exception as e:
-                print(f"{lang}ページ処理中エラー: {e}")
+                self.logger.error("%sページ処理中エラー: %s", lang, e)
             finally:
                 driver.quit()
 
