@@ -2,3 +2,5 @@
 !/external_resource/config/
 !/external_resource/config/config.json
 /data/log
+__pycache__/
+*.pyc
