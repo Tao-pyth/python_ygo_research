@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
 from function.clas.card_get_screen import CardInfoScreen  # ← 追加
+from function.clas.card_detail_screen import CardDetailScreen
 
 # 日本語フォント設定
 LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
@@ -25,6 +26,7 @@ LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.tt
 # CardInfoScreen, DeckManagerScreen の .kv ファイル読み込み
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
 Builder.load_file("resource/theme/gui/DeckManagerScreen.kv")
+Builder.load_file("resource/theme/gui/CardDetailScreen.kv")
 
 class MenuScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -78,6 +80,7 @@ class DeckAnalyzerApp(MDApp):
         sm.add_widget(CardInfoScreen(name="card_info"))  # ← 追加
         sm.add_widget(DeckManagerScreen(name="deck"))
         sm.add_widget(CardListScreen(name="card_list"))
+        sm.add_widget(CardDetailScreen(name="card_detail"))
         sm.add_widget(MatchRegisterScreen(name="match"))
         sm.add_widget(StatsScreen(name="stats"))
         return sm
