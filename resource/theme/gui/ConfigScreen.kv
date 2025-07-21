@@ -41,6 +41,20 @@
                 on_release: root.open_theme_picker()
 
         BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(48)
+            MDLabel:
+                id: theme_style_label
+                text: 'Light'
+                size_hint_x: 0.5
+                valign: 'center'
+            MDRaisedButton:
+                text: 'スタイル切替'
+                size_hint_x: 0.5
+                on_release: root.toggle_theme_style()
+
+        BoxLayout:
             size_hint_y: None
             height: dp(48)
             spacing: dp(10)
