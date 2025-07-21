@@ -9,7 +9,7 @@
             id: title_label
             text: '[カード一覧]'
             halign: 'center'
-            font_name: DEFAULT_FONT
+            font_name: app.font_name
             size_hint_y: 0.1
 
         MDScrollView:
@@ -30,13 +30,13 @@
             MDTextField:
                 id: name_input
                 hint_text: 'カード名'
-                font_name: DEFAULT_FONT
+                font_name: app.font_name
                 size_hint_x: 0.5
             MDTextField:
                 id: count_input
                 hint_text: '枚数'
                 input_filter: 'int'
-                font_name: DEFAULT_FONT
+                font_name: app.font_name
                 size_hint_x: 0.2
             MDRaisedButton:
                 id: add_button
