@@ -37,7 +37,7 @@ When started, the app displays a menu allowing you to manage decks, register mat
 
 ## Additional Tools
 
-- `function/clas/Card_img_download.py` – Selenium based tool to capture card images and save metadata.
-- `function/clas/MontecarloSimulator.py` – Monte Carlo simulator for evaluating deck card contribution rates.
+  - `function/core/card_img_download.py` – Selenium based tool to capture card images and save metadata.
+  - `data/archive/MontecarloSimulator.py` – Monte Carlo simulator for evaluating deck card contribution rates.
 
 These scripts require the dependencies above plus a configured Chrome WebDriver for Selenium.
