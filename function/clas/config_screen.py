@@ -5,8 +5,15 @@ from kivy.properties import ObjectProperty
 from kivymd.app import MDApp
 from function.core.config_handler import ConfigHandler, DEFAULT_CONFIG, DEFAULT_FONT_PATH
 from kivymd.uix.filemanager import MDFileManager
+from kivymd.uix.dialog import MDDialog
+from kivy.clock import Clock
 import os
 import shutil
+import logging
+from function.core.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 Builder.load_file("resource/theme/gui/ConfigScreen.kv")
 
@@ -86,9 +93,15 @@ class ConfigScreen(MDScreen):
             shutil.copy(path, dest_path)
             self.ids.font_path_label.text = dest_path
             self.ids.use_custom_font.active = True
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(f"Font copy failed: {e}")
+            self._show_dialog("エラー", "フォントファイルのコピーに失敗しました。")
         self.close_file_manager()
+
+    def _show_dialog(self, title: str, text: str) -> None:
+        Clock.schedule_once(
+            lambda dt: MDDialog(title=title, text=text, size_hint=(0.8, 0.4)).open()
+        )
 
     def go_back(self):
         self.manager.current = "menu"
