@@ -66,6 +66,13 @@ class DBHandler:
         self.cursor.execute("SELECT card_name, SUM(count) FROM deck_cards GROUP BY card_name")
         return self.cursor.fetchall()
 
+    def get_all_card_names(self):
+        """
+        cards_info テーブルからすべてのカード名を取得
+        """
+        self.cursor.execute("SELECT name_ja FROM cards_info ORDER BY name_ja")
+        return [row[0] for row in self.cursor.fetchall()]
+
     def add_card(self, deck_name, card_name, count):
         """
         デッキにカードを追加（既存なら加算）
