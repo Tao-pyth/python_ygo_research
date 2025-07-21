@@ -15,22 +15,20 @@
             id: new_deck_row
             orientation: 'horizontal'
             spacing: 10
-            size_hint_y: None
-            height: dp(48)
+            size_hint_y: 0.1
             MDTextField:
                 id: new_deck_input
                 hint_text: '新しいデッキ名'
+                size_hint_x: 0.7
             MDRaisedButton:
                 text: 'デッキを作成'
-                size_hint_x: None
-                width: dp(120)
+                size_hint_x: 0.2
                 md_bg_color: 0.4, 0.4, 0.6, 1
                 on_press: root.create_deck(self)
             MDIconButton:
                 icon: 'refresh'
                 on_press: root.refresh_deck_list()
-                size_hint_x: None
-                width: dp(48)
+                size_hint_x: 0.1
 
         MDScrollView:
             size_hint: 1, 0.6
@@ -45,15 +43,14 @@
             id: import_row
             orientation: 'horizontal'
             spacing: 10
-            size_hint_y: None
-            height: dp(48)
+            size_hint_y: 0.1
             MDTextField:
                 id: import_path_input
                 hint_text: 'CSVファイルのパスを入力'
-                size_hint_x: 0.7
+                size_hint_x: 0.8
             MDRaisedButton:
                 text: 'CSVからインポート'
-                size_hint_x: 0.3
+                size_hint_x: 0.2
                 md_bg_color: 0.3, 0.6, 0.3, 1
                 on_press: root.import_deck_from_csv(self)
 
@@ -61,8 +58,7 @@
             id: bottom_row
             orientation: 'horizontal'
             spacing: 10
-            size_hint_y: None
-            height: dp(48)
+            size_hint_y: 0.1
             MDRaisedButton:
                 text: '戻る'
                 size_hint_x: 0.5
