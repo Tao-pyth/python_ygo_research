@@ -19,6 +19,8 @@ from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
 from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 from function.clas.card_detail_screen import CardDetailScreen
+from function.clas.config_screen import ConfigScreen
+from function.core.config_handler import ConfigHandler
 
 # 日本語フォント設定
 LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
@@ -27,6 +29,7 @@ LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.tt
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
 Builder.load_file("resource/theme/gui/DeckManagerScreen.kv")
 Builder.load_file("resource/theme/gui/CardDetailScreen.kv")
+Builder.load_file("resource/theme/gui/ConfigScreen.kv")
 
 class MenuScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -39,6 +42,7 @@ class MenuScreen(MDScreen):
         layout.add_widget(MDRaisedButton(text="デッキ管理", on_press=lambda x: self.change_screen("deck")))
         layout.add_widget(MDRaisedButton(text="試合データ登録", on_press=lambda x: self.change_screen("match")))
         layout.add_widget(MDRaisedButton(text="統計表示", on_press=lambda x: self.change_screen("stats")))
+        layout.add_widget(MDRaisedButton(text="設定", on_press=lambda x: self.change_screen("config")))
         layout.add_widget(MDRaisedButton(text="終了", on_press=self.exit_app))
 
         self.add_widget(layout)
@@ -73,8 +77,12 @@ class StatsScreen(MDScreen):
         self.manager.current = screen_name
 
 class DeckAnalyzerApp(MDApp):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.config_handler = ConfigHandler()
+
     def build(self):
-        self.theme_cls.primary_palette = "BlueGray"
+        self.theme_cls.primary_palette = self.config_handler.config.get("theme_color", "Blue")
         sm = MDScreenManager()
         sm.add_widget(MenuScreen(name="menu"))
         sm.add_widget(CardInfoScreen(name="card_info"))  # ← 追加
@@ -83,6 +91,9 @@ class DeckAnalyzerApp(MDApp):
         sm.add_widget(CardDetailScreen(name="card_detail"))
         sm.add_widget(MatchRegisterScreen(name="match"))
         sm.add_widget(StatsScreen(name="stats"))
+        config_screen = ConfigScreen(name="config")
+        config_screen.config_handler = self.config_handler
+        sm.add_widget(config_screen)
         return sm
 
 if __name__ == '__main__':
