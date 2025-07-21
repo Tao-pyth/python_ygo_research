@@ -7,6 +7,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "max_display_cards": 50,
     "font_size_base": 16,
     "theme_color": "Blue",
+    "theme_style": "Light",
 }
 
 class ConfigHandler:

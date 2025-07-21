@@ -20,6 +20,7 @@ class ConfigScreen(MDScreen):
         self.ids.max_display_cards.text = str(cfg.get("max_display_cards", ""))
         self.ids.font_size_base.text = str(cfg.get("font_size_base", ""))
         self.ids.theme_color_label.text = cfg.get("theme_color", "Blue")
+        self.ids.theme_style_label.text = cfg.get("theme_style", "Light")
 
     def open_theme_picker(self):
         picker = MDThemePicker()
@@ -37,12 +38,20 @@ class ConfigScreen(MDScreen):
         cfg["max_display_cards"] = int(self.ids.max_display_cards.text or 0)
         cfg["font_size_base"] = float(self.ids.font_size_base.text or 0)
         cfg["theme_color"] = self.ids.theme_color_label.text
+        cfg["theme_style"] = self.ids.theme_style_label.text
         self.config_handler.save()
 
     def reset_config(self):
         self.config_handler.reset()
         self.load_values()
         MDApp.get_running_app().theme_cls.primary_palette = DEFAULT_CONFIG["theme_color"]
+        MDApp.get_running_app().theme_cls.theme_style = DEFAULT_CONFIG["theme_style"]
+
+    def toggle_theme_style(self):
+        current = self.ids.theme_style_label.text
+        new_style = "Dark" if current == "Light" else "Light"
+        self.ids.theme_style_label.text = new_style
+        MDApp.get_running_app().theme_cls.theme_style = new_style
 
     def go_back(self):
         self.manager.current = "menu"

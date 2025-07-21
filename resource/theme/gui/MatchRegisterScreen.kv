@@ -1,0 +1,14 @@
+#:import dp kivy.metrics.dp
+<MatchRegisterScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        MDLabel:
+            text: '[試合データ登録画面]'
+            halign: 'center'
+
+        MDRaisedButton:
+            text: '戻る'
+            on_release: root.change_screen('menu')

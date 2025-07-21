@@ -23,7 +23,7 @@ pip install kivy kivymd pillow beautifulsoup4 selenium matplotlib
 1. Clone this repository.
 2. Ensure the `external_resource` directory exists (ignored by git) for the SQLite database and other exported data.
 3. (Optional) Place Japanese fonts under `resource/theme/font` if you need additional fonts.
-4. Default configuration is stored in `external_resource/config/config.json`. This file will be created automatically on first run if it does not exist.
+4. Default configuration is stored in `external_resource/config/config.json`. This file will be created automatically on first run if it does not exist. You can edit this file to set the KivyMD color palette and theme style used by the application.
 
 ## Running the Application
 
@@ -34,6 +34,7 @@ python3 main.py
 ```
 
 When started, the app displays a menu allowing you to manage decks, register match data, view statistics or adjust application settings. Deck data is stored locally in an SQLite database under `external_resource/db/ygo_data.db`.
+The current color palette and light/dark style are loaded from `config.json` and can also be changed from the in-app settings screen.
 
 ## Additional Tools
 

@@ -1,9 +1,6 @@
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDRaisedButton
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -32,23 +29,12 @@ Builder.load_file("resource/theme/gui/DeckManagerScreen.kv")
 Builder.load_file("resource/theme/gui/CardDetailScreen.kv")
 Builder.load_file("resource/theme/gui/CardEffectEditScreen.kv")
 Builder.load_file("resource/theme/gui/ConfigScreen.kv")
+Builder.load_file("resource/theme/gui/CardListScreen.kv")
+Builder.load_file("resource/theme/gui/MenuScreen.kv")
+Builder.load_file("resource/theme/gui/MatchRegisterScreen.kv")
+Builder.load_file("resource/theme/gui/StatsScreen.kv")
 
 class MenuScreen(MDScreen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        layout = MDBoxLayout(orientation='vertical', spacing=10, padding=20)
-
-        layout.add_widget(MDLabel(text="デッキ分析ツール メインメニュー", halign="center", font_style="H5"))
-
-        layout.add_widget(MDRaisedButton(text="カード情報取得", on_press=lambda x: self.change_screen("card_info")))  # ← 追加
-        layout.add_widget(MDRaisedButton(text="デッキ管理", on_press=lambda x: self.change_screen("deck")))
-        layout.add_widget(MDRaisedButton(text="試合データ登録", on_press=lambda x: self.change_screen("match")))
-        layout.add_widget(MDRaisedButton(text="統計表示", on_press=lambda x: self.change_screen("stats")))
-        layout.add_widget(MDRaisedButton(text="設定", on_press=lambda x: self.change_screen("config")))
-        layout.add_widget(MDRaisedButton(text="終了", on_press=self.exit_app))
-
-        self.add_widget(layout)
-
     def change_screen(self, screen_name):
         self.manager.current = screen_name
 
@@ -57,24 +43,10 @@ class MenuScreen(MDScreen):
         Window.close()
 
 class MatchRegisterScreen(MDScreen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        layout = MDBoxLayout(orientation='vertical', spacing=10, padding=20)
-        layout.add_widget(MDLabel(text="[試合データ登録画面]", halign="center"))
-        layout.add_widget(MDRaisedButton(text="戻る", on_press=lambda x: self.change_screen("menu")))
-        self.add_widget(layout)
-
     def change_screen(self, screen_name):
         self.manager.current = screen_name
 
 class StatsScreen(MDScreen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        layout = MDBoxLayout(orientation='vertical', spacing=10, padding=20)
-        layout.add_widget(MDLabel(text="[統計表示画面]", halign="center"))
-        layout.add_widget(MDRaisedButton(text="戻る", on_press=lambda x: self.change_screen("menu")))
-        self.add_widget(layout)
-
     def change_screen(self, screen_name):
         self.manager.current = screen_name
 
@@ -84,7 +56,9 @@ class DeckAnalyzerApp(MDApp):
         self.config_handler = ConfigHandler()
 
     def build(self):
-        self.theme_cls.primary_palette = self.config_handler.config.get("theme_color", "Blue")
+        cfg = self.config_handler.config
+        self.theme_cls.primary_palette = cfg.get("theme_color", "Blue")
+        self.theme_cls.theme_style = cfg.get("theme_style", "Light")
         sm = MDScreenManager()
         sm.add_widget(MenuScreen(name="menu"))
         sm.add_widget(CardInfoScreen(name="card_info"))  # ← 追加

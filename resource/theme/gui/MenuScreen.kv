@@ -1,0 +1,30 @@
+#:import dp kivy.metrics.dp
+<MenuScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        MDLabel:
+            text: 'デッキ分析ツール メインメニュー'
+            halign: 'center'
+            font_style: 'H5'
+
+        MDRaisedButton:
+            text: 'カード情報取得'
+            on_release: root.change_screen('card_info')
+        MDRaisedButton:
+            text: 'デッキ管理'
+            on_release: root.change_screen('deck')
+        MDRaisedButton:
+            text: '試合データ登録'
+            on_release: root.change_screen('match')
+        MDRaisedButton:
+            text: '統計表示'
+            on_release: root.change_screen('stats')
+        MDRaisedButton:
+            text: '設定'
+            on_release: root.change_screen('config')
+        MDRaisedButton:
+            text: '終了'
+            on_release: root.exit_app(self)
