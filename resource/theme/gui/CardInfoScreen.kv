@@ -1,65 +1,113 @@
-<CardInfoScreen>:
-    name: "card_info"
-    MDBoxLayout:
-        orientation: "vertical"
-        padding: dp(20)
-        spacing: dp(15)
+# CardInfoScreen.kv
+<CardNameTab>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    md_bg_color: 0.96, 0.96, 0.96, 1  # タブ背景色調整
 
+    MDTextField:
+        id: card_name_input
+        hint_text: "カード名を入力"
+        mode: "rectangle"
+        size_hint_x: 1
+    BoxLayout:
+        id: card_option_box
+        orientation: 'horizontal'
+        size_hint_y: 1
+        height: "60dp"  # 固定でずれ防止
+        spacing: 10
+
+<DeckURLTab>:
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+    md_bg_color: 0.96, 0.96, 0.96, 1
+
+    MDTextField:
+        id: deck_url_input
+        hint_text: "デッキURLを入力"
+        mode: "rectangle"
+        size_hint_x: 1
+
+    BoxLayout:
+        id: deck_option_box
+        orientation: 'horizontal'
+        size_hint_y: 1
+        height: "60dp"  # 固定でずれ防止
+        MDCheckbox:
+            id: register_deck_checkbox
+            size_hint_x: 0.3
+            on_active: app.root.get_screen('card_info').on_register_checkbox(self, self.active)
         MDLabel:
-            text: "カード情報取得"
-            halign: "center"
-            font_style: "H5"
-
+            size_hint_x: 0.4
+            text: "取得したカードをデッキとして登録する"
         MDTextField:
-            id: card_name_input
-            hint_text: "カード名を入力"
-            mode: "rectangle"
-
-        MDTextField:
-            id: deck_url_input
-            hint_text: "デッキURLを入力"
-            mode: "rectangle"
-            opacity: 0
+            id: deck_name_input
+            hint_text: "デッキ名"
+            size_hint_x: 0.3
             disabled: True
 
-        MDBoxLayout:
-            adaptive_height: True
-            spacing: dp(20)
-            MDCheckbox:
-                id: related_checkbox
+<CardInfoScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        # タイトル領域（15%）
+        BoxLayout:
+            size_hint_y: 0.15
+            padding: 10
             MDLabel:
-                text: "関連カードも取得する"
-                valign: "center"
+                text: "カード情報取得"
+                halign: "center"
+                font_style: "H5"
 
-        MDBoxLayout:
-            adaptive_height: True
-            spacing: dp(20)
-            MDCheckbox:
-                id: deck_checkbox
-                on_active: root.on_checkbox_toggle(*args)
+        # タブ（60%）
+        MDTabs:
+            id: tabs
+            on_tab_switch: root.on_tab_switch(*args)
+            background_color: 0.75, 0.75, 0.75, 1
+
+            CardNameTab:
+                title: "カード名を入力"
+
+            DeckURLTab:
+                title: "デッキURLを入力"
+
+
+        # 関連カード取得領域（10%）
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.1
+            spacing: 10
+            padding: 10
+            # ステータス表示
             MDLabel:
-                text: "デッキ情報をURLから取得する"
-                valign: "center"
+                id: status_label
+                text: ""
 
-		MDLabel:
-			id: status_label
-			text: ""
-			halign: "center"
-			theme_text_color: "Secondary"
+            MDLabel:
+                id: last_saved_label
+                text: ""
+        # ボタン領域（15%）
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.15
+            padding: 10
+            spacing: 10
 
-		MDLabel:
-			id: last_saved_label
-			text: ""
-			halign: "center"
-			theme_text_color: "Hint"
+            BoxLayout:
+                size_hint_x: 0.3
+                MDRaisedButton:
+                    text: "戻る"
+                    md_bg_color: 0.9, 0.3, 0.3, 1
+                    on_release: root.manager.current = 'menu'
 
-		MDRaisedButton:
-			id: retrieve_button
-			text: "取得する"
-			pos_hint: {"center_x": 0.5}
-			on_release: root.on_retrieve_pressed()
+            BoxLayout:
+                size_hint_x: 0.4
 
-		MDRaisedButton:
-			text: "戻る"
-			pos_hint: {"center_x": 0.5}
-			on_release: root.manager.current = "menu"
+            BoxLayout:
+                size_hint_x: 0.3
+                MDRaisedButton:
+                    text: "取得する"
+                    md_bg_color: 0, 0.6, 0.8, 1
+                    on_release: root.on_retrieve_pressed()
+                    id: retrieve_button

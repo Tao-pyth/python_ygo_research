@@ -30,4 +30,6 @@ def fix_existing_info_fields(db_path='external_resource/db/ygo_data.db'):
     print("すべての card_info フィールドを修正しました。")
 
 if __name__ == "__main__":
-    fix_existing_info_fields()
+    import kivy
+    print(kivy.__version__)
+    #fix_existing_info_fields()

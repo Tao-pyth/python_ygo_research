@@ -1,7 +1,6 @@
 import os
 import time
 import re
-import random
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -23,9 +22,33 @@ class CardImgDownload:
         self.last_saved_card_name = ""
         os.makedirs(self.save_dir, exist_ok=True)
 
+    def get_card_urls_from_page(self, page_url):
+        """
+        検索結果ページまたはデッキ構成ページからカード詳細URL一覧を抽出する
+        """
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+
+        try:
+            driver.get(page_url)
+            time.sleep(3)
+            inputs = driver.find_elements(By.CLASS_NAME, "link_value")
+            rel_urls = [i.get_attribute('value') for i in inputs]
+            full_urls = [
+                "https://www.db.yugioh-card.com/" + u.replace('&request_locale=ja', '')
+                for u in rel_urls if 'ope=2' in u
+            ]
+            return full_urls
+        except Exception as e:
+            print(f"URL取得エラー: {e}")
+            return []
+        finally:
+            driver.quit()
+
     def _extract_info_text(self, driver, lang):
         """
-        カード情報（分類や種別など）を抽出。card_text混入を防ぐ。
+        カード情報欄から説明テキストを抽出（card_text部分は除去）
         """
         try:
             item_boxes = driver.find_elements(By.CLASS_NAME, "CardText")
@@ -44,7 +67,7 @@ class CardImgDownload:
 
     def capture_card_image(self, base_url):
         """
-        与えられたカード詳細URLから画像・情報を取得し、DBに登録
+        カード詳細URLから画像・多言語情報を取得し、DBに保存
         """
         cid_match = re.search(r'cid=(\d+)', base_url)
         if not cid_match:
@@ -70,26 +93,24 @@ class CardImgDownload:
                     ActionChains(driver).move_to_element(driver.find_element(By.ID, "card_frame")).click().perform()
                     time.sleep(1)
 
-                # カード名取得
+                # カード名
                 name_elem = driver.find_element(By.ID, "cardname")
                 soup = BeautifulSoup(name_elem.get_attribute('outerHTML'), 'html.parser')
                 for span in soup.find_all('span'):
                     span.decompose()
                 data[f"name_{lang}"] = soup.get_text(strip=True)
 
-                # カードテキスト（冒頭ノイズ削除）
+                # テキスト欄
                 text_elem = driver.find_element(By.CLASS_NAME, "item_box_text")
                 soup = BeautifulSoup(text_elem.get_attribute('outerHTML'), 'html.parser')
                 raw_text = soup.get_text(strip=True)
-                if lang == "ja":
-                    clean_text = raw_text.replace("カードテキスト", "", 1).strip()
-                else:
-                    clean_text = raw_text.replace("Card Text", "", 1).strip()
+                clean_text = raw_text.replace("カードテキスト", "", 1).strip() if lang == "ja" else raw_text.replace("Card Text", "", 1).strip()
                 data[f"card_text_{lang}"] = clean_text
 
-                # カード情報
+                # 情報欄
                 data[f"card_info_{lang}"] = self._extract_info_text(driver, lang)
 
+                # 画像保存（日本語のみ）
                 if lang == "ja":
                     screenshot_path = os.path.join(self.save_dir, "screenshot.png")
                     driver.save_screenshot(screenshot_path)
@@ -106,6 +127,7 @@ class CardImgDownload:
             finally:
                 driver.quit()
 
+        # DB登録
         self.db_handler.upsert_card_info(
             cid=cid,
             name_ja=data.get("name_ja", ""),

@@ -1,14 +1,20 @@
 import threading
 import time
 from kivy.clock import Clock
+from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.tab import MDTabsBase
 from function.core.db_handler import DBHandler
 from function.core.card_img_download import CardImgDownload
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+
+
+class CardNameTab(BoxLayout, MDTabsBase):
+    pass
+
+
+class DeckURLTab(BoxLayout, MDTabsBase):
+    pass
 
 
 class CardInfoScreen(MDScreen):
@@ -18,20 +24,22 @@ class CardInfoScreen(MDScreen):
         self.downloader = CardImgDownload(db_handler=self.db_handler)
         self.dialog = None
         self._is_downloading = False
+        self.mode = "keyword"
+        self._tab_map = {}  # タイトル名→インスタンスのマッピング
 
-    def on_checkbox_toggle(self, checkbox, value):
-        card_input = self.ids.card_name_input
-        deck_url_input = self.ids.deck_url_input
+    def on_tab_switch(self, instance_tabs, instance_tab, instance_tab_label, tab_text):
+        self.mode = "keyword" if tab_text == "カード名を入力" else "deck"
+        self._tab_map[self.mode] = instance_tab
 
-        card_input.disabled = value
-        card_input.text_color = (1, 0, 0, 1) if value else (0, 0, 0, 1)
-        deck_url_input.disabled = not value
-        deck_url_input.opacity = 1 if value else 0
+    def on_register_checkbox(self, checkbox, value):
+        deck_tab = self._tab_map.get("deck")
+        if deck_tab:
+            deck_tab.ids.deck_name_input.disabled = not value
+            deck_tab.ids.deck_name_input.opacity = 1 if value else 0
 
     def on_retrieve_pressed(self):
         if self._is_downloading:
             return
-
         self._is_downloading = True
         self.ids.retrieve_button.disabled = True
         self.ids.status_label.text = "処理を開始します..."
@@ -40,72 +48,65 @@ class CardInfoScreen(MDScreen):
 
     def _start_download_process(self):
         try:
-            deck_mode = self.ids.deck_checkbox.active
-            keyword = self.ids.card_name_input.text.strip()
-            url = self.ids.deck_url_input.text.strip()
+            current_tab = self._tab_map.get(self.mode)
+            if not current_tab:
+                self._show_dialog("エラー", "タブが正しく認識されていません。")
+                return
 
-            if deck_mode and url:
-                self._process_deck_url(url)
-            elif keyword:
-                self._process_card_keyword(keyword)
-            else:
-                self._show_dialog("エラー", "カード名またはデッキURLを入力してください。")
+            if self.mode == "keyword":
+                keyword = current_tab.ids.card_name_input.text.strip()
+                if keyword:
+                    search_url = (
+                        "https://www.db.yugioh-card.com/yugiohdb/card_search.action?"
+                        f"ope=1&sess=1&rp=10&mode=&sort=1&keyword={keyword}"
+                    )
+                    self._process_url(search_url)
+                else:
+                    self._show_dialog("エラー", "カード名が空です。")
+
+            elif self.mode == "deck":
+                deck_url = current_tab.ids.deck_url_input.text.strip()
+                if deck_url:
+                    if current_tab.ids.register_deck_checkbox.active:
+                        deck_name = current_tab.ids.deck_name_input.text.strip()
+                        if not deck_name:
+                            self._show_dialog("エラー", "デッキ名が空です。")
+                            return
+                        if deck_name in self.db_handler.get_all_decks():
+                            self._show_dialog("重複", f"デッキ名『{deck_name}』は既に存在します。別名を指定してください。")
+                            return
+                        self._card_list = []
+                    self._process_url(deck_url)
+                    if current_tab.ids.register_deck_checkbox.active:
+                        self._register_deck(deck_name)
+                else:
+                    self._show_dialog("エラー", "デッキURLが空です。")
         finally:
             Clock.schedule_once(lambda dt: self._reset_ui())
 
-    def _process_card_keyword(self, keyword):
-        urls = self.downloader.get_card_urls_by_keyword(keyword)
+    def _process_url(self, url):
+        urls = self.downloader.get_card_urls_from_page(url)
         if not urls:
-            self._update_status("カードが見つかりませんでした。")
+            self._update_status("URLが無効かカードが見つかりません。")
             return
-
-        for i, url in enumerate(urls, 1):
-            self._update_status(f"カード {i}/{len(urls)} を取得中...")
-            self.downloader.capture_card_image(url)
-            card_name = self.downloader.last_saved_card_name
-            self._update_last_saved(card_name)
-        self._show_dialog("完了", f"{len(urls)} 件のカードを登録しました。")
-
-    def _process_deck_url(self, deck_url):
-        related = self.ids.related_checkbox.active
-        max_rounds = 3 if related else 1
-
-        for round_num in range(max_rounds):
-            self._update_status(f"{round_num+1} 周目の取得中...")
-            urls = self._get_detail_urls_from_deck(deck_url)
-            if not urls:
-                self._update_status("URLが無効かカードが見つかりません。")
-                return
-
-            for i, url in enumerate(urls, 1):
-                self._update_status(f"{round_num+1}周目: {i}/{len(urls)} を処理中...")
-                self.downloader.capture_card_image(url)
-                card_name = self.downloader.last_saved_card_name
+        for i, detail_url in enumerate(urls, 1):
+            self._update_status(f"{i}/{len(urls)} を処理中...")
+            card_name = self.downloader.capture_card_image(detail_url)
+            if card_name:
                 self._update_last_saved(card_name)
+                if self.mode == "deck" and hasattr(self, "_card_list"):
+                    self._card_list.append(card_name)
+        self._show_dialog("完了", "カードの取得を完了しました。")
 
-            if related and round_num < max_rounds - 1:
-                self._update_status("待機中...（10秒）")
-                time.sleep(10)
-
-        self._show_dialog("完了", f"{max_rounds} 回の処理を完了しました。")
-
-    def _get_detail_urls_from_deck(self, deck_url):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
-        driver = webdriver.Chrome(service=Service(self.downloader.chromedriver_path), options=chrome_options)
-
-        try:
-            driver.get(deck_url)
-            time.sleep(3)
-            inputs = driver.find_elements(By.CLASS_NAME, "link_value")
-            rel_urls = [i.get_attribute('value') for i in inputs]
-            full_urls = ["https://www.db.yugioh-card.com/" + u.replace('&request_locale=ja', '') for u in rel_urls if 'ope=2' in u]
-            return full_urls
-        except Exception as e:
-            print(f"URL取得エラー: {e}")
-            return []
-        finally:
-            driver.quit()
+    def _register_deck(self, deck_name):
+        self.db_handler.create_deck(deck_name)
+        counts = {}
+        for card in getattr(self, "_card_list", []):
+            counts[card] = counts.get(card, 0) + 1
+        for card_name, count in counts.items():
+            self.db_handler.add_card(deck_name, card_name, count)
+        self._update_status(f"デッキ「{deck_name}」として登録しました。")
+        self._card_list.clear()
 
     def _update_status(self, msg):
         Clock.schedule_once(lambda dt: setattr(self.ids.status_label, "text", msg))
