@@ -22,8 +22,9 @@ from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 # 日本語フォント設定
 LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
 
-# CardInfoScreen の .kv ファイル読み込み
+# CardInfoScreen, DeckManagerScreen の .kv ファイル読み込み
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
+Builder.load_file("resource/theme/gui/DeckManagerScreen.kv")
 
 class MenuScreen(MDScreen):
     def __init__(self, **kwargs):

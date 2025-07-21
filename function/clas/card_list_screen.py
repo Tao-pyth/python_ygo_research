@@ -69,8 +69,8 @@ class CardListScreen(MDScreen):
         self.current_deck_name = None
         self.title_label.text = "全カード一覧"
         self.grid.clear_widgets()
-        all_cards = self.db.get_all_cards()
-        for idx, (card_name, _) in enumerate(all_cards):
+        all_cards = self.db.get_all_card_names()
+        for idx, card_name in enumerate(all_cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
             label = MDLabel(text=card_name, halign="left", font_name=DEFAULT_FONT)
             delete_btn = MDIconButton(icon="delete", disabled=True)
