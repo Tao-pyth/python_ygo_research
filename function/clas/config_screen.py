@@ -1,9 +1,9 @@
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.picker import MDThemePicker
+from kivymd.uix.menu import MDDropdownMenu
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivymd.app import MDApp
-from function.core.config_handler import ConfigHandler, DEFAULT_CONFIG, DEFAULT_FONT_PATH
+from function.core.config_handler import ConfigHandler, DEFAULT_CONFIG
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
@@ -17,9 +17,32 @@ logger = logging.getLogger(__name__)
 
 Builder.load_file("resource/theme/gui/ConfigScreen.kv")
 
+PALETTES = [
+    "Red",
+    "Pink",
+    "Purple",
+    "DeepPurple",
+    "Indigo",
+    "Blue",
+    "LightBlue",
+    "Cyan",
+    "Teal",
+    "Green",
+    "LightGreen",
+    "Lime",
+    "Yellow",
+    "Amber",
+    "Orange",
+    "DeepOrange",
+    "Brown",
+    "Gray",
+    "BlueGray",
+]
+
+
 class ConfigScreen(MDScreen):
     config_handler: ConfigHandler = ObjectProperty()
-    _theme_menu = None
+    color_menu: MDDropdownMenu | None = None
     file_manager: MDFileManager | None = None
 
     def on_pre_enter(self, *args):
@@ -36,15 +59,28 @@ class ConfigScreen(MDScreen):
         self.ids.theme_color_label.text = cfg.get("theme_color", "Blue")
         self.ids.theme_style_label.text = cfg.get("theme_style", "Light")
 
-    def open_theme_picker(self):
-        picker = MDThemePicker()
-        picker.bind(on_select_color=self.on_theme_selected)
-        picker.open()
+    def open_color_menu(self):
+        if not self.color_menu:
+            menu_items = [
+                {
+                    "text": palette,
+                    "viewclass": "OneLineListItem",
+                    "on_release": lambda x=palette: self.set_theme_color(x),
+                }
+                for palette in PALETTES
+            ]
+            self.color_menu = MDDropdownMenu(
+                caller=self.ids.color_menu_btn,
+                items=menu_items,
+                width_mult=4,
+            )
+        self.color_menu.open()
 
-    def on_theme_selected(self, instance, value):
-        palette = value.name.capitalize() if hasattr(value, "name") else str(value)
+    def set_theme_color(self, palette: str):
         self.ids.theme_color_label.text = palette
         MDApp.get_running_app().theme_cls.primary_palette = palette
+        if self.color_menu:
+            self.color_menu.dismiss()
 
     def save_config(self):
         cfg = self.config_handler.config
