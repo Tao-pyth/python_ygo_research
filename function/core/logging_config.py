@@ -3,8 +3,8 @@ import os
 from logging.handlers import RotatingFileHandler
 
 
-def setup_logging(log_dir=os.path.join('data', 'log'), log_file='app.log'):
-    """Configure root logger to log to a file under ``data/log``.
+def setup_logging(log_dir=os.path.join('external_resource', 'log'), log_file='app.log'):
+    """Configure root logger to log to a file under ``external_resource/log``.
 
     Parameters
     ----------

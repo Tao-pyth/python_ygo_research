@@ -1,6 +1,3 @@
-/external_resource/*
-!/external_resource/config/
-!/external_resource/config/config.json
-/data/log
+/external_resource/
 __pycache__/
 *.pyc

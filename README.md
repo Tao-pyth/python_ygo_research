@@ -21,8 +21,8 @@ pip install kivy kivymd pillow beautifulsoup4 selenium matplotlib
 ## Setup
 
 1. Clone this repository.
-2. Ensure the `external_resource` directory exists (ignored by git) for the SQLite database and other exported data.
-3. Default configuration is stored in `external_resource/config/config.json`. This file will be created automatically on first run if it does not exist. You can edit this file to set the KivyMD color palette and theme style used by the application.  
+2. Ensure the `external_resource` directory exists (ignored by git). It will be created automatically on first run and stores the SQLite database, logs and other exported data.
+3. Default configuration is stored in `resource/json/config.json`. On first launch this file is copied to `external_resource/config/config.json` if it does not already exist. You can edit the copied file to change the KivyMD color palette and theme style used by the application.
    The application uses the Windows standard Japanese font `C:\Windows\Fonts\msgothic.ttc` by default. Enable the custom font option in the settings screen if you wish to upload another font file.
 
 ## Running the Application
@@ -39,6 +39,6 @@ The current color palette and light/dark style are loaded from `config.json` and
 ## Additional Tools
 
   - `function/core/card_img_download.py` – Selenium based tool to capture card images and save metadata.
-  - `data/archive/MontecarloSimulator.py` – Monte Carlo simulator for evaluating deck card contribution rates.
+  - `function/core/monte_carlo_simulator.py` – Monte Carlo simulator for evaluating deck card contribution rates.
 
 These scripts require the dependencies above plus a configured Chrome WebDriver for Selenium.
