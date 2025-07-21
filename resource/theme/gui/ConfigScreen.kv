@@ -1,0 +1,55 @@
+#:import dp kivy.metrics.dp
+<ConfigScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(10)
+
+        MDLabel:
+            text: '設定'
+            halign: 'center'
+            size_hint_y: None
+            height: dp(40)
+
+        MDTextField:
+            id: animation_speed
+            hint_text: 'アニメーション速度'
+            input_filter: 'float'
+
+        MDTextField:
+            id: max_display_cards
+            hint_text: '最大表示カード数'
+            input_filter: 'int'
+
+        MDTextField:
+            id: font_size_base
+            hint_text: '使用フォントサイズ'
+            input_filter: 'float'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(48)
+            MDLabel:
+                id: theme_color_label
+                text: 'Blue'
+                size_hint_x: 0.5
+                valign: 'center'
+            MDRaisedButton:
+                text: 'テーマ変更'
+                size_hint_x: 0.5
+                on_release: root.open_theme_picker()
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDRaisedButton:
+                text: '保存'
+                on_release: root.save_config()
+            MDRaisedButton:
+                text: 'リセット'
+                on_release: root.reset_config()
+            MDRaisedButton:
+                text: '戻る'
+                on_release: root.go_back()

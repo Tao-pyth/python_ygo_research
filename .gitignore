@@ -1,2 +1,4 @@
-/external_resource
+/external_resource/*
+!/external_resource/config/
+!/external_resource/config/config.json
 /data/log
