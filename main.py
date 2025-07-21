@@ -19,6 +19,7 @@ from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
 from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 from function.clas.card_detail_screen import CardDetailScreen
+from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
 from function.core.config_handler import ConfigHandler
 
@@ -29,6 +30,7 @@ LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.tt
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
 Builder.load_file("resource/theme/gui/DeckManagerScreen.kv")
 Builder.load_file("resource/theme/gui/CardDetailScreen.kv")
+Builder.load_file("resource/theme/gui/CardEffectEditScreen.kv")
 Builder.load_file("resource/theme/gui/ConfigScreen.kv")
 
 class MenuScreen(MDScreen):
@@ -89,6 +91,7 @@ class DeckAnalyzerApp(MDApp):
         sm.add_widget(DeckManagerScreen(name="deck"))
         sm.add_widget(CardListScreen(name="card_list"))
         sm.add_widget(CardDetailScreen(name="card_detail"))
+        sm.add_widget(CardEffectEditScreen(name="card_effect_edit"))
         sm.add_widget(MatchRegisterScreen(name="match"))
         sm.add_widget(StatsScreen(name="stats"))
         config_screen = ConfigScreen(name="config")

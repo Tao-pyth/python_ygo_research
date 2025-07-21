@@ -1,6 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.chip import MDChip
 from function.core.db_handler import DBHandler
+from function.core.effect_dsl_generator import generate_effect_yaml
+import os
 
 
 class CardDetailScreen(MDScreen):
@@ -36,4 +38,25 @@ class CardDetailScreen(MDScreen):
         except ValueError:
             pass
         self.manager.current = "card_list"
+
+    def open_effect_editor(self):
+        """Generate temporary YAML and open the effect edit screen."""
+        info = self.db.get_full_card_info(self.card_name)
+        if not info:
+            return
+        cid = info.get("cid")
+        text = info.get("card_text", "")
+        yaml_dir = os.path.join("external_resource", "effect_yaml")
+        os.makedirs(yaml_dir, exist_ok=True)
+        path = os.path.join(yaml_dir, f"{cid}.yaml")
+        try:
+            yaml_text = generate_effect_yaml(cid, self.card_name, text)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(yaml_text)
+        except Exception:
+            pass
+
+        edit_screen = self.manager.get_screen("card_effect_edit")
+        edit_screen.load_yaml(cid)
+        self.manager.current = "card_effect_edit"
 
