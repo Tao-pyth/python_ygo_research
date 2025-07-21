@@ -31,6 +31,33 @@
             size_hint_y: None
             height: dp(48)
             MDLabel:
+                text: 'カスタムフォント'
+                size_hint_x: 0.5
+                valign: 'center'
+            MDSwitch:
+                id: use_custom_font
+                size_hint_x: 0.5
+                on_active: root.toggle_font_inputs(self.active)
+
+        MDLabel:
+            id: font_path_label
+            text: ''
+            size_hint_y: None
+            height: dp(24)
+
+        MDRaisedButton:
+            id: font_upload_btn
+            text: 'フォントアップロード'
+            size_hint_y: None
+            height: dp(48)
+            disabled: not use_custom_font.active
+            on_release: root.open_file_manager()
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(48)
+            MDLabel:
                 id: theme_color_label
                 text: 'Blue'
                 size_hint_x: 0.5

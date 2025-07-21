@@ -22,8 +22,8 @@ pip install kivy kivymd pillow beautifulsoup4 selenium matplotlib
 
 1. Clone this repository.
 2. Ensure the `external_resource` directory exists (ignored by git) for the SQLite database and other exported data.
-3. (Optional) Place Japanese fonts under `resource/theme/font` if you need additional fonts.
-4. Default configuration is stored in `external_resource/config/config.json`. This file will be created automatically on first run if it does not exist. You can edit this file to set the KivyMD color palette and theme style used by the application.
+3. Default configuration is stored in `external_resource/config/config.json`. This file will be created automatically on first run if it does not exist. You can edit this file to set the KivyMD color palette and theme style used by the application.  
+   The application uses the Windows standard Japanese font `C:\Windows\Fonts\msgothic.ttc` by default. Enable the custom font option in the settings screen if you wish to upload another font file.
 
 ## Running the Application
 

@@ -18,10 +18,12 @@ from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 from function.clas.card_detail_screen import CardDetailScreen
 from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
-from function.core.config_handler import ConfigHandler
+from function.core.config_handler import ConfigHandler, DEFAULT_FONT_PATH
 
-# 日本語フォント設定
-LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
+# Load configuration and register font
+config_handler = ConfigHandler()
+font_path = config_handler.config.get("font_path") if config_handler.config.get("use_custom_font") else DEFAULT_FONT_PATH
+LabelBase.register(DEFAULT_FONT, font_path)
 
 # CardInfoScreen, DeckManagerScreen の .kv ファイル読み込み
 Builder.load_file("resource/theme/gui/CardInfoScreen.kv")
@@ -53,7 +55,7 @@ class StatsScreen(MDScreen):
 class DeckAnalyzerApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.config_handler = ConfigHandler()
+        self.config_handler = config_handler
 
     def build(self):
         cfg = self.config_handler.config
