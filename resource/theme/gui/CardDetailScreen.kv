@@ -75,6 +75,10 @@
                 on_release: root.manager.current = 'card_list'
                 md_bg_color: 0.7, 0.2, 0.2, 1
             MDRaisedButton:
+                text: 'カード効果を設定する'
+                on_release: root.open_effect_editor()
+                md_bg_color: 0.4, 0.4, 0.8, 1
+            MDRaisedButton:
                 text: '保存'
                 on_release: root.save_scores()
                 md_bg_color: 0.2, 0.6, 0.2, 1
