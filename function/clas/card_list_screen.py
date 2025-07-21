@@ -5,7 +5,7 @@ from kivymd.uix.button import MDIconButton
 from kivymd.uix.card import MDCard
 from kivy.metrics import dp
 from function.core.db_handler import DBHandler
-from kivy.core.text import DEFAULT_FONT
+from kivymd.app import MDApp
 from kivy.utils import get_color_from_hex
 
 class CardListScreen(MDScreen):
@@ -23,7 +23,8 @@ class CardListScreen(MDScreen):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
 
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
-            label = MDLabel(text=f"{card_name} x{count}", halign="left", font_name=DEFAULT_FONT)
+            app = MDApp.get_running_app()
+            label = MDLabel(text=f"{card_name} x{count}", halign="left", font_name=app.font_name)
 
             minus_btn = MDIconButton(icon="minus", on_press=lambda x, name=card_name: self.change_card_count(name, -1))
             plus_btn = MDIconButton(icon="plus", on_press=lambda x, name=card_name: self.change_card_count(name, 1))
@@ -48,9 +49,10 @@ class CardListScreen(MDScreen):
         self.ids.title_label.text = "全カード一覧"
         self.ids.grid.clear_widgets()
         all_cards = self.db.get_all_card_names()
+        app = MDApp.get_running_app()
         for idx, card_name in enumerate(all_cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
-            label = MDLabel(text=card_name, halign="left", font_name=DEFAULT_FONT)
+            label = MDLabel(text=card_name, halign="left", font_name=app.font_name)
             delete_btn = MDIconButton(icon="delete", disabled=True)
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
             row.add_widget(label)
