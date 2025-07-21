@@ -21,20 +21,37 @@ class CardImgDownload:
     def __init__(self,
                  db_handler: DBHandler,
                  chromedriver_path=r'external_resource/chromedriver-win32/chromedriver.exe',
-                 save_dir='external_resource/image'):
+                 save_dir='external_resource/image',
+                 persist: bool = False):
         self.db_handler = db_handler
         self.chromedriver_path = chromedriver_path
         self.save_dir = save_dir
         self.last_saved_card_name = ""
+        self.persist = persist
+        self.driver = None
         os.makedirs(self.save_dir, exist_ok=True)
+
+    def _create_driver(self):
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--window-size=1280,960")
+        return webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+
+    def _get_driver(self):
+        if self.driver is None:
+            self.driver = self._create_driver()
+        return self.driver
+
+    def close_driver(self):
+        if self.driver is not None:
+            self.driver.quit()
+            self.driver = None
 
     def get_card_urls_from_page(self, page_url):
         """
         カード画像URL（img[src*="get_image.action?"]）から cid を抽出し、詳細URLを構築して返す。
         """
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
-        driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+        driver = self._get_driver() if self.persist else self._create_driver()
 
         try:
             driver.get(page_url)
@@ -54,15 +71,14 @@ class CardImgDownload:
             logger.error(f"URL抽出エラー: {e}")
             return []
         finally:
-            driver.quit()
+            if not self.persist:
+                driver.quit()
 
     def get_card_counts_from_page(self, page_url):
         """
         デッキ構成ページから cid をカウントして返す
         """
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
-        driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+        driver = self._get_driver() if self.persist else self._create_driver()
 
         try:
             driver.get(page_url)
@@ -119,10 +135,7 @@ class CardImgDownload:
         data = {}
         for lang in ["ja", "en"]:
             url = base_url + f"&request_locale={lang}"
-            chrome_options = Options()
-            chrome_options.add_argument("--headless=new")
-            chrome_options.add_argument("--window-size=1280,960")
-            driver = webdriver.Chrome(service=Service(self.chromedriver_path), options=chrome_options)
+            driver = self._get_driver() if self.persist else self._create_driver()
             try:
                 driver.get(url)
                 time.sleep(2)
@@ -163,7 +176,8 @@ class CardImgDownload:
             except Exception as e:
                 logger.error(f"{lang}ページ処理中エラー: {e}")
             finally:
-                driver.quit()
+                if not self.persist:
+                    driver.quit()
 
         # DB登録（ja/en両方取得後）
         self.db_handler.upsert_card_info(

@@ -26,11 +26,14 @@ class CardInfoScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.db_handler = DBHandler()
-        self.downloader = CardImgDownload(db_handler=self.db_handler)
+        self.downloader = CardImgDownload(db_handler=self.db_handler, persist=True)
         self.dialog = None
         self._is_downloading = False
         self.mode = "keyword"
         self._tab_map = {}  # タイトル名→インスタンスのマッピング
+
+    def on_leave(self, *args):
+        self.downloader.close_driver()
 
     def on_tab_switch(self, instance_tabs, instance_tab, instance_tab_label, tab_text):
         self.mode = "keyword" if tab_text == "カード名を入力" else "deck"

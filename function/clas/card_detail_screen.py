@@ -3,6 +3,11 @@ from kivymd.uix.chip import MDChip
 from function.core.db_handler import DBHandler
 from function.core.effect_dsl_generator import generate_effect_yaml
 import os
+import logging
+from function.core.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 class CardDetailScreen(MDScreen):
@@ -35,8 +40,8 @@ class CardDetailScreen(MDScreen):
             h = int(self.ids.hand_score.text)
             g = int(self.ids.grave_score.text)
             self.db.set_card_scores(self.card_name, field=f, hand=h, grave=g)
-        except ValueError:
-            pass
+        except ValueError as e:
+            logger.error(f"Invalid score value: {e}")
         self.manager.current = "card_list"
 
     def open_effect_editor(self):
@@ -53,8 +58,8 @@ class CardDetailScreen(MDScreen):
             yaml_text = generate_effect_yaml(cid, self.card_name, text)
             with open(path, "w", encoding="utf-8") as f:
                 f.write(yaml_text)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.exception(f"Failed to create effect YAML: {e}")
 
         edit_screen = self.manager.get_screen("card_effect_edit")
         edit_screen.load_yaml(cid)
