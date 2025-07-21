@@ -8,6 +8,13 @@ from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
 from kivy.lang import Builder
 
+import logging
+from function.core.logging_config import setup_logging
+
+# Initialize logging to output under data/log
+setup_logging()
+logger = logging.getLogger(__name__)
+
 from function.clas.deck_manager import DeckManagerScreen
 from function.clas.card_list_screen import CardListScreen
 from function.clas.card_get_screen import CardInfoScreen  # ← 追加
@@ -75,4 +82,5 @@ class DeckAnalyzerApp(MDApp):
         return sm
 
 if __name__ == '__main__':
+    logger.info('Starting DeckAnalyzerApp')
     DeckAnalyzerApp().run()

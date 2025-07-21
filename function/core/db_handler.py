@@ -1,5 +1,10 @@
 import sqlite3
 import csv
+import logging
+from function.core.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class DBHandler:
     def __init__(self, db_path='external_resource/db/ygo_data.db'):
@@ -65,7 +70,7 @@ class DBHandler:
         """
         デッキにカードを追加（既存なら加算）
         """
-        print(f"[DEBUG *]デッキ登録中: {deck_name=} {card_name=} {count=}")
+        logger.debug(f"デッキ登録中: {deck_name=} {card_name=} {count=}")
         self.cursor.execute("SELECT count FROM deck_cards WHERE deck_name = ? AND card_name = ?", (deck_name, card_name))
         result = self.cursor.fetchone()
         if result:

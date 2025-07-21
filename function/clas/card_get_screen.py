@@ -1,5 +1,7 @@
 import threading
-import time,os
+import time, os
+import logging
+from function.core.logging_config import setup_logging
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.screen import MDScreen
@@ -7,6 +9,9 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.tab import MDTabsBase
 from function.core.db_handler import DBHandler
 from function.core.card_img_download import CardImgDownload
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 class CardNameTab(BoxLayout, MDTabsBase):
@@ -112,12 +117,12 @@ class CardInfoScreen(MDScreen):
         deck_url = deck_tab.ids.deck_url_input.text.strip()
 
         # deck内カードの cid をカウント取得
-        print(f"[DEBUG *]=== 登録処理開始 for deck: {deck_name} ===")
+        logger.debug(f"=== 登録処理開始 for deck: {deck_name} ===")
         cid_counter = self.downloader.get_card_counts_from_page(deck_url)
-        print(f"[DEBUG *]取得したカードCIDと枚数: {cid_counter}")
+        logger.debug(f"取得したカードCIDと枚数: {cid_counter}")
         for cid, count in cid_counter.items():
             card_name = self.db_handler.get_card_name_by_cid(f"cid{cid}")
-            print(f"[DEBUG *]cid {cid} → card_name: {card_name}") 
+            logger.debug(f"cid {cid} → card_name: {card_name}")
             if card_name:
                 self.db_handler.add_card(deck_name, card_name, count)
 
