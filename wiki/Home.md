@@ -14,7 +14,7 @@ Deck Analyzer は Kivy と KivyMD を用いたデッキ管理・カード分析�
 pip install kivy kivymd pillow beautifulsoup4 selenium matplotlib
 ```
 
-`external_resource` ディレクトリを作成し、SQLite データベース (`db/ygo_data.db`) を配置してください。初回起動時には `external_resource/config/config.json` が自動生成され、アニメーション速度や表示枚数、テーマカラー・スタイルを編集できます。カード画像取得には `external_resource/chromedriver-win32/chromedriver.exe` を設置し、Selenium が参照できるようにします。フォントは既定で Windows の `msgothic.ttc` が使用されますが、設定画面からカスタムフォントをアップロードし `resource/theme/font` に保存したファイルを指定することも可能です。
+`external_resource` ディレクトリを作成し、SQLite データベース (`db/ygo_data.db`) を配置してください。初回起動時には `resource/json/config.json` を元に `external_resource/config/config.json` が自動生成され、アニメーション速度や表示枚数、テーマカラー・スタイルを編集できます。カード画像取得には `external_resource/chromedriver-win32/chromedriver.exe` を設置し、Selenium が参照できるようにします。フォントは既定で Windows の `msgothic.ttc` が使用されますが、設定画面からカスタムフォントをアップロードし `resource/theme/font` に保存したファイルを指定することも可能です。
 
 ## 3. アプリの起動
 
@@ -29,7 +29,7 @@ python3 main.py
 ## 4. 付属ツール
 
  - `function/core/card_img_download.py` : Selenium を使ったカード画像収集ツール
- - `data/archive/MontecarloSimulator.py` : デッキのカード貢献度を評価するモンテカルロシミュレータ
+ - `function/core/monte_carlo_simulator.py` : デッキのカード貢献度を評価するモンテカルロシミュレータ
 
 これらのツールの詳細はリポジトリの `README.md` を参照してください。
 

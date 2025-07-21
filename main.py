@@ -6,9 +6,11 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 
 import logging
+import os
 from function.core.logging_config import setup_logging
 
-# Initialize logging to output under data/log
+# Ensure external_resource directory exists and initialize logging
+os.makedirs("external_resource", exist_ok=True)
 setup_logging()
 logger = logging.getLogger(__name__)
 

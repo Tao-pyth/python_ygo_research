@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from typing import Any, Dict
 
 DEFAULT_FONT_PATH = r"C:\\Windows\\Fonts\\msgothic.ttc"
@@ -14,11 +15,23 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "theme_style": "Light",
 }
 
+DEFAULT_CONFIG_PATH = os.path.join("resource", "json", "config.json")
+
+
 class ConfigHandler:
     def __init__(self, path: str = "external_resource/config/config.json"):
         self.path = path
         self.config: Dict[str, Any] = DEFAULT_CONFIG.copy()
+        self._ensure_config()
         self.load()
+
+    def _ensure_config(self) -> None:
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        if not os.path.exists(self.path):
+            if os.path.exists(DEFAULT_CONFIG_PATH):
+                shutil.copy(DEFAULT_CONFIG_PATH, self.path)
+            else:
+                self.save()
 
     def load(self) -> None:
         if os.path.exists(self.path):
