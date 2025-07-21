@@ -10,10 +10,11 @@
             text: '[カード一覧]'
             halign: 'center'
             font_name: DEFAULT_FONT
-            size_hint_y: 0.15
+            size_hint_y: 0.1
 
         MDScrollView:
             id: scroll
+            size_hint_y: 0.7
             MDGridLayout:
                 id: grid
                 cols: 1
@@ -25,8 +26,7 @@
             id: input_row
             orientation: 'horizontal'
             spacing: dp(10)
-            size_hint_y: None
-            height: dp(48)
+            size_hint_y: 0.1
             MDTextField:
                 id: name_input
                 hint_text: 'カード名'
@@ -48,7 +48,6 @@
         MDRaisedButton:
             id: back_button
             text: '戻る'
-            size_hint_y: None
-            height: dp(48)
+            size_hint_y: 0.1
             md_bg_color: 0.7, 0.2, 0.2, 1
             on_release: root.go_back(self)
