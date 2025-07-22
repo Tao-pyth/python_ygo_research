@@ -5,10 +5,14 @@ from kivy.core.text import LabelBase
 from kivy.properties import StringProperty
 from kivy.core.window import Window
 from kivy.lang import Builder
+from kivy.uix.scrollview import ScrollView
+from kivymd.uix.label import MDLabel
+from kivymd.uix.dialog import MDDialog
 
 import logging
 import os
 from function.core.logging_config import setup_logging
+from app_version import get_version_info
 
 # Ensure external_resource directory exists and initialize logging
 os.makedirs("external_resource", exist_ok=True)
@@ -38,12 +42,33 @@ Builder.load_file("resource/theme/gui/MatchRegisterScreen.kv")
 Builder.load_file("resource/theme/gui/StatsScreen.kv")
 
 class MenuScreen(MDScreen):
+    version_text = StringProperty(get_version_info())
+    changelog_dialog = None
+
     def change_screen(self, screen_name):
         self.manager.current = screen_name
 
     def exit_app(self, instance):
         MDApp.get_running_app().stop()
         Window.close()
+
+    def show_changelog(self):
+        try:
+            with open(os.path.join("doc", "CHANGELOG.md"), encoding="utf-8") as f:
+                text = f.read()
+        except Exception as e:
+            text = f"更新履歴を読み込めませんでした: {e}"
+        label = MDLabel(text=text, halign="left", size_hint_y=None)
+        label.bind(texture_size=lambda i, s: setattr(i, "height", s[1]))
+        scroll = ScrollView()
+        scroll.add_widget(label)
+        self.changelog_dialog = MDDialog(
+            title="更新履歴",
+            type="custom",
+            content_cls=scroll,
+            size_hint=(0.9, 0.9),
+        )
+        self.changelog_dialog.open()
 
 class MatchRegisterScreen(MDScreen):
     def change_screen(self, screen_name):
