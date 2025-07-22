@@ -32,6 +32,16 @@
             font_name: app.font_name
             on_release: root.change_screen('config')
         MDRaisedButton:
+            text: '更新履歴'
+            font_name: app.font_name
+            on_release: root.show_changelog()
+        MDRaisedButton:
             text: '終了'
             font_name: app.font_name
             on_release: root.exit_app(self)
+        MDLabel:
+            text: 'Version: ' + root.version_text
+            halign: 'center'
+            font_name: app.font_name
+            size_hint_y: None
+            height: self.texture_size[1]
