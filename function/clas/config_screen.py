@@ -4,6 +4,7 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivymd.app import MDApp
 from function.core.config_handler import ConfigHandler, DEFAULT_CONFIG
+from function.core.font_utils import font_contains_japanese
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.dialog import MDDialog
 from kivy.clock import Clock
@@ -129,9 +130,15 @@ class ConfigScreen(MDScreen):
         os.makedirs(dest_dir, exist_ok=True)
         dest_path = os.path.join(dest_dir, os.path.basename(path))
         try:
+            if not font_contains_japanese(path):
+                self._show_dialog("警告", "日本語グリフを含まないフォントです。")
+                return
             shutil.copy(path, dest_path)
             self.ids.font_path_label.text = dest_path
             self.ids.use_custom_font.active = True
+            app = MDApp.get_running_app()
+            if hasattr(app, "apply_font"):
+                app.apply_font()
         except Exception as e:
             logger.exception(f"Font copy failed: {e}")
             self._show_dialog("エラー", "フォントファイルのコピーに失敗しました。")

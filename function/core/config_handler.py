@@ -4,11 +4,12 @@ import shutil
 import logging
 from typing import Any, Dict
 from function.core.logging_config import setup_logging
+from function.core.font_utils import find_default_font
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
-DEFAULT_FONT_PATH = r"C:\\Windows\\Fonts\\msgothic.ttc"
+DEFAULT_FONT_PATH = find_default_font()
 
 DEFAULT_CONFIG: Dict[str, Any] = {
     "animation_speed": 1.0,
