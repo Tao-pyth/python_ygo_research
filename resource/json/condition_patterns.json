@@ -1,0 +1,9 @@
+{
+  "while this card is in your gy": "self.location == 'graveyard'",
+  "if this card is in your gy": "self.location == 'graveyard'",
+  "if your opponent controls a monster": "opponent.field.monster.count > 0",
+  "your opponent controls a monster": "opponent.field.monster.count > 0",
+  "if you have no cards in your hand": "player.hand.count == 0",
+  "while you control no cards": "player.hand.count == 0",
+  "except during the damage step": "not field_state.phase == 'damage_step'"
+}

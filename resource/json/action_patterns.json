@@ -1,0 +1,7 @@
+{
+  "draw (\\d+) card": "draw({n})",
+  "special summon (this card|it)": "special_summon(self, to=\"field\", position=\"defense\")",
+  "add .* to your hand": "add_to_hand({target})",
+  "banish this card": "banish(self)",
+  "destroy .*": "destroy({target})"
+}
