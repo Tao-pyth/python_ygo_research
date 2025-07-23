@@ -22,7 +22,7 @@ pip install kivy kivymd pillow beautifulsoup4 selenium matplotlib
 
 1. Clone this repository.
 2. Ensure the `external_resource` directory exists (ignored by git). It will be created automatically on first run and stores the SQLite database, logs and other exported data.
-3. Default configuration is stored in `resource/json/config.json`. On first launch this file is copied to `external_resource/config/config.json` if it does not already exist. You can edit the copied file to change the KivyMD color palette and theme style used by the application. The application now uses the bundled **Mgen+ 1c** font internally and does not allow uploading custom fonts.
+3. Default configuration is stored in `resource/json/config.json`. On first launch this file is copied to `external_resource/config/config.json` if it does not already exist. You can edit the copied file to change the KivyMD color palette and theme style used by the application.
 
 ## Running the Application
 

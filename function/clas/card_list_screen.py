@@ -23,8 +23,7 @@ class CardListScreen(MDScreen):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
 
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
-            app = MDApp.get_running_app()
-            label = MDLabel(text=f"{card_name} x{count}", halign="left", font_name=app.font_name)
+            label = MDLabel(text=f"{card_name} x{count}", halign="left")
 
             minus_btn = MDIconButton(icon="minus", on_press=lambda x, name=card_name: self.change_card_count(name, -1))
             plus_btn = MDIconButton(icon="plus", on_press=lambda x, name=card_name: self.change_card_count(name, 1))
@@ -49,10 +48,9 @@ class CardListScreen(MDScreen):
         self.ids.title_label.text = "全カード一覧"
         self.ids.grid.clear_widgets()
         all_cards = self.db.get_all_card_names()
-        app = MDApp.get_running_app()
         for idx, card_name in enumerate(all_cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
-            label = MDLabel(text=card_name, halign="left", font_name=app.font_name)
+            label = MDLabel(text=card_name, halign="left")
             delete_btn = MDIconButton(icon="delete", disabled=True)
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
             row.add_widget(label)

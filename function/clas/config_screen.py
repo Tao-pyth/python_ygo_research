@@ -83,9 +83,6 @@ class ConfigScreen(MDScreen):
         cfg["theme_color"] = self.ids.theme_color_label.text
         cfg["theme_style"] = self.ids.theme_style_label.text
         self.config_handler.save()
-        app = MDApp.get_running_app()
-        if hasattr(app, "apply_font"):
-            app.apply_font()
 
     def reset_config(self):
         self.config_handler.reset()
