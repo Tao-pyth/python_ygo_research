@@ -14,6 +14,13 @@ import os
 from function.core.logging_config import setup_logging
 from app_version import get_version_info
 
+DEFAULT_FONT_PATH = os.path.join(
+    "resource",
+    "theme",
+    "font",
+    "mgenplus-1c-regular.ttf",
+)
+
 # Ensure external_resource directory exists and initialize logging
 os.makedirs("external_resource", exist_ok=True)
 setup_logging()
@@ -25,7 +32,7 @@ from function.clas.card_get_screen import CardInfoScreen  # ← 追加
 from function.clas.card_detail_screen import CardDetailScreen
 from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
-from function.core.config_handler import ConfigHandler, DEFAULT_FONT_PATH
+from function.core.config_handler import ConfigHandler
 
 # Load configuration handler
 config_handler = ConfigHandler()
