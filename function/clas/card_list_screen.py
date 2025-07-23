@@ -7,12 +7,27 @@ from kivy.metrics import dp
 from function.core.db_handler import DBHandler
 from kivymd.app import MDApp
 from kivy.utils import get_color_from_hex
+import os
 
 class CardListScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.db = DBHandler()
         self.current_deck_name = None
+        self.yaml_dir = os.path.join("external_resource", "effect_yaml")
+
+    def _create_status_label(self, card_name):
+        """Return an MDLabel showing DSL status for the card."""
+        cid = self.db.get_cid_by_card_name(card_name)
+        text = ""
+        if cid:
+            path = os.path.join(self.yaml_dir, f"{cid}.yaml")
+            if os.path.exists(path):
+                text = "済"
+        else:
+            text = "未"
+        label = MDLabel(text=text, halign="center", size_hint_x=None, width=dp(20))
+        return label
 
     def load_deck(self, deck_name):
         self.current_deck_name = deck_name
@@ -24,6 +39,7 @@ class CardListScreen(MDScreen):
 
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
             label = MDLabel(text=f"{card_name} x{count}", halign="left")
+            status_lbl = self._create_status_label(card_name)
 
             minus_btn = MDIconButton(icon="minus", on_press=lambda x, name=card_name: self.change_card_count(name, -1))
             plus_btn = MDIconButton(icon="plus", on_press=lambda x, name=card_name: self.change_card_count(name, 1))
@@ -35,6 +51,7 @@ class CardListScreen(MDScreen):
             delete_btn.text_color = (0.5, 0.2, 0.2, 1)
 
             row.add_widget(label)
+            row.add_widget(status_lbl)
             row.add_widget(minus_btn)
             row.add_widget(plus_btn)
             row.add_widget(delete_btn)
@@ -51,9 +68,11 @@ class CardListScreen(MDScreen):
         for idx, card_name in enumerate(all_cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
             label = MDLabel(text=card_name, halign="left")
+            status_lbl = self._create_status_label(card_name)
             delete_btn = MDIconButton(icon="delete", disabled=True)
             row = MDBoxLayout(orientation="horizontal", spacing=10, size_hint_y=None, height=dp(50))
             row.add_widget(label)
+            row.add_widget(status_lbl)
             row.add_widget(delete_btn)
 
             card = MDCard(row, size_hint_y=None, height=dp(50), padding=10, md_bg_color=bg_color)
