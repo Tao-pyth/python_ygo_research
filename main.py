@@ -26,7 +26,6 @@ from function.clas.card_detail_screen import CardDetailScreen
 from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
 from function.core.config_handler import ConfigHandler, DEFAULT_FONT_PATH
-from function.core.font_utils import font_contains_japanese
 
 # Load configuration handler
 config_handler = ConfigHandler()
@@ -89,12 +88,7 @@ class DeckAnalyzerApp(MDApp):
         self.apply_font()
 
     def apply_font(self):
-        cfg = self.config_handler.config
         path = DEFAULT_FONT_PATH
-        if cfg.get("use_custom_font"):
-            custom = cfg.get("font_path")
-            if custom and os.path.exists(custom) and font_contains_japanese(custom):
-                path = custom
         if not os.path.exists(path):
             logger.warning(f"Font path not found: {path}")
             return
