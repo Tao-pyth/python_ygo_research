@@ -1,25 +1,19 @@
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
-from kivy.core.text import LabelBase
+from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.properties import StringProperty
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.dialog import MDDialog
-
 import logging
 import os
 from function.core.logging_config import setup_logging
 from app_version import get_version_info
 
-DEFAULT_FONT_PATH = os.path.join(
-    "resource",
-    "theme",
-    "font",
-    "mgenplus-1c-regular.ttf",
-)
+LabelBase.register(DEFAULT_FONT, r'resource\\theme\\font\\mgenplus-1c-regular.ttf')
 
 # Ensure external_resource directory exists and initialize logging
 os.makedirs("external_resource", exist_ok=True)
@@ -92,17 +86,6 @@ class DeckAnalyzerApp(MDApp):
         super().__init__(**kwargs)
         self.config_handler = config_handler
         self._font_index = 0
-        self.apply_font()
-
-    def apply_font(self):
-        path = DEFAULT_FONT_PATH
-        if not os.path.exists(path):
-            logger.warning(f"Font path not found: {path}")
-            return
-        self._font_index += 1
-        name = f"CustomFont{self._font_index}"
-        LabelBase.register(name, path)
-        self.font_name = name
 
     def build(self):
         cfg = self.config_handler.config
