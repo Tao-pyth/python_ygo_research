@@ -11,7 +11,6 @@
             halign: 'center'
             size_hint_y: None
             height: dp(40)
-            font_name: app.font_name
 
         MDScrollView:
             MDTextField:
@@ -21,14 +20,12 @@
                 size_hint_y: None
                 height: self.minimum_height
                 mode: 'rectangle'
-                font_name: app.font_name
 
         MDTextField:
             id: file_path_input
             hint_text: 'ファイルパス'
             size_hint_y: None
             height: dp(40)
-            font_name: app.font_name
 
         BoxLayout:
             size_hint_y: None
@@ -36,22 +33,17 @@
             spacing: dp(10)
             MDRaisedButton:
                 text: '読込'
-                font_name: app.font_name
                 on_release: root.reload_yaml()
             MDRaisedButton:
                 text: '保存'
-                font_name: app.font_name
                 on_release: root.save_yaml()
             MDRaisedButton:
                 text: 'インポート'
-                font_name: app.font_name
                 on_release: root.import_yaml()
             MDRaisedButton:
                 text: 'エクスポート'
-                font_name: app.font_name
                 on_release: root.export_yaml()
             MDRaisedButton:
                 text: '戻る'
-                font_name: app.font_name
                 md_bg_color: 0.7,0.2,0.2,1
                 on_release: app.root.current = 'card_detail'

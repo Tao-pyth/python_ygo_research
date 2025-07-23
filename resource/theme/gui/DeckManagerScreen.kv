@@ -10,7 +10,6 @@
             text: '[デッキ管理]'
             halign: 'center'
             size_hint_y: 0.1
-            font_name: app.font_name
 
         MDBoxLayout:
             id: new_deck_row
@@ -21,10 +20,8 @@
                 id: new_deck_input
                 hint_text: '新しいデッキ名'
                 size_hint_x: 0.7
-                font_name: app.font_name
             MDRaisedButton:
                 text: 'デッキを作成'
-                font_name: app.font_name
                 size_hint_x: 0.2
                 md_bg_color: 0.4, 0.4, 0.6, 1
                 on_press: root.create_deck(self)
@@ -51,10 +48,8 @@
                 id: import_path_input
                 hint_text: 'CSVファイルのパスを入力'
                 size_hint_x: 0.8
-                font_name: app.font_name
             MDRaisedButton:
                 text: 'CSVからインポート'
-                font_name: app.font_name
                 size_hint_x: 0.2
                 md_bg_color: 0.3, 0.6, 0.3, 1
                 on_press: root.import_deck_from_csv(self)
@@ -66,13 +61,11 @@
             size_hint_y: 0.1
             MDRaisedButton:
                 text: '戻る'
-                font_name: app.font_name
                 size_hint_x: 0.5
                 md_bg_color: 0.7, 0.2, 0.2, 1
                 on_press: root.go_back(self)
             MDRaisedButton:
                 text: '全てのカードを見る'
-                font_name: app.font_name
                 size_hint_x: 0.5
                 md_bg_color: 0.2, 0.6, 0.2, 1
                 on_press: root.show_all_cards(self)

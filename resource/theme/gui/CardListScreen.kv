@@ -9,7 +9,6 @@
             id: title_label
             text: '[カード一覧]'
             halign: 'center'
-            font_name: app.font_name
             size_hint_y: 0.1
 
         MDScrollView:
@@ -30,18 +29,15 @@
             MDTextField:
                 id: name_input
                 hint_text: 'カード名'
-                font_name: app.font_name
                 size_hint_x: 0.5
             MDTextField:
                 id: count_input
                 hint_text: '枚数'
                 input_filter: 'int'
-                font_name: app.font_name
                 size_hint_x: 0.2
             MDRaisedButton:
                 id: add_button
                 text: '追加'
-                font_name: app.font_name
                 size_hint_x: 0.3
                 md_bg_color: 0.2, 0.6, 0.2, 1
                 on_release: root.add_card_to_deck(self)
@@ -49,7 +45,6 @@
         MDRaisedButton:
             id: back_button
             text: '戻る'
-            font_name: app.font_name
             size_hint_y: 0.1
             md_bg_color: 0.7, 0.2, 0.2, 1
             on_release: root.go_back(self)
