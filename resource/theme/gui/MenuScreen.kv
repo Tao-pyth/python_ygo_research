@@ -9,39 +9,30 @@
             text: 'デッキ分析ツール メインメニュー'
             halign: 'center'
             font_style: 'H5'
-            font_name: app.font_name
 
         MDRaisedButton:
             text: 'カード情報取得'
-            font_name: app.font_name
             on_release: root.change_screen('card_info')
         MDRaisedButton:
             text: 'デッキ管理'
-            font_name: app.font_name
             on_release: root.change_screen('deck')
         MDRaisedButton:
             text: '試合データ登録'
-            font_name: app.font_name
             on_release: root.change_screen('match')
         MDRaisedButton:
             text: '統計表示'
-            font_name: app.font_name
             on_release: root.change_screen('stats')
         MDRaisedButton:
             text: '設定'
-            font_name: app.font_name
             on_release: root.change_screen('config')
         MDRaisedButton:
             text: '更新履歴'
-            font_name: app.font_name
             on_release: root.show_changelog()
         MDRaisedButton:
             text: '終了'
-            font_name: app.font_name
             on_release: root.exit_app(self)
         MDLabel:
             text: 'Version: ' + root.version_text
             halign: 'center'
-            font_name: app.font_name
             size_hint_y: None
             height: self.texture_size[1]

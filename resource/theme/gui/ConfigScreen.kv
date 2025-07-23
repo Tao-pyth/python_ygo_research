@@ -10,25 +10,21 @@
             halign: 'center'
             size_hint_y: None
             height: dp(40)
-            font_name: app.font_name
 
         MDTextField:
             id: animation_speed
             hint_text: 'アニメーション速度'
             input_filter: 'float'
-            font_name: app.font_name
 
         MDTextField:
             id: max_display_cards
             hint_text: '最大表示カード数'
             input_filter: 'int'
-            font_name: app.font_name
 
         MDTextField:
             id: font_size_base
             hint_text: '使用フォントサイズ'
             input_filter: 'float'
-            font_name: app.font_name
 
 
         BoxLayout:
@@ -40,11 +36,9 @@
                 text: 'Blue'
                 size_hint_x: 0.5
                 valign: 'center'
-                font_name: app.font_name
             MDRaisedButton:
                 id: color_menu_btn
                 text: 'テーマ変更'
-                font_name: app.font_name
                 size_hint_x: 0.5
                 on_release: root.open_color_menu()
 
@@ -57,10 +51,8 @@
                 text: 'Light'
                 size_hint_x: 0.5
                 valign: 'center'
-                font_name: app.font_name
             MDRaisedButton:
                 text: 'スタイル切替'
-                font_name: app.font_name
                 size_hint_x: 0.5
                 on_release: root.toggle_theme_style()
 
@@ -70,13 +62,10 @@
             spacing: dp(10)
             MDRaisedButton:
                 text: '保存'
-                font_name: app.font_name
                 on_release: root.save_config()
             MDRaisedButton:
                 text: 'リセット'
-                font_name: app.font_name
                 on_release: root.reset_config()
             MDRaisedButton:
                 text: '戻る'
-                font_name: app.font_name
                 on_release: root.go_back()
