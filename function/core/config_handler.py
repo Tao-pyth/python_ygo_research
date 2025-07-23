@@ -9,9 +9,6 @@ from function.core.logging_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
-DEFAULT_FONT_PATH = os.path.join(
-    "resource", "theme", "font", "mgenplus-1c-regular.ttf"
-)
 
 DEFAULT_CONFIG: Dict[str, Any] = {
     "animation_speed": 1.0,

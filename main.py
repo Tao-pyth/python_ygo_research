@@ -8,6 +8,8 @@ from kivy.lang import Builder
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.dialog import MDDialog
+from kivy.properties import StringProperty
+
 import logging
 import os
 from function.core.logging_config import setup_logging
@@ -80,12 +82,10 @@ class StatsScreen(MDScreen):
         self.manager.current = screen_name
 
 class DeckAnalyzerApp(MDApp):
-    font_name = StringProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.config_handler = config_handler
-        self._font_index = 0
 
     def build(self):
         cfg = self.config_handler.config
