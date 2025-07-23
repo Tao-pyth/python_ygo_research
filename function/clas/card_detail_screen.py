@@ -31,7 +31,7 @@ class CardDetailScreen(MDScreen):
         usage_box = self.ids.deck_usage
         usage_box.clear_widgets()
         for deck, count in self.db.get_deck_usage_for_card(card_name):
-            chip = MDChip(label=f"{deck} x{count}")
+            chip = MDChip(text=f"{deck} x{count}")
             usage_box.add_widget(chip)
 
     def save_scores(self):
