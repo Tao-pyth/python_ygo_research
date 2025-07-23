@@ -8,6 +8,7 @@ English card effect text into a YAML formatted DSL (schema v3).
 import os
 import re
 import argparse
+import json
 from typing import List, Dict, Any
 
 # target パターン辞書読み込み
@@ -42,18 +43,19 @@ def split_effects(text: str) -> List[str]:
     return parts
 
 
-# Simple regex pattern dictionaries
-TRIGGER_PATTERNS = {
-    r"when this card is normal summoned": "on_normal_summon",
-    r"when this card is special summoned": "on_special_summon",
-    r"when this card is sent to the gy": "on_sent_to_graveyard",
-    r"if this card is in your gy": "on_in_graveyard",
-}
+# Simple regex pattern dictionaries loaded from JSON
+_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+_PATTERN_DIR = os.path.join(_ROOT_DIR, "resource", "json")
 
-CONDITION_PATTERNS = {
-    r"in your gy": 'self.location == "graveyard"',
-    r"control no monsters": 'self.controller.monsters == 0',
-}
+
+def _load_pattern_dict(filename: str) -> Dict[str, str]:
+    path = os.path.join(_PATTERN_DIR, filename)
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+TRIGGER_PATTERNS = _load_pattern_dict("trigger_patterns.json")
+CONDITION_PATTERNS = _load_pattern_dict("condition_patterns.json")
 
 COST_PATTERNS = [
     (r"pay (\d+) lp", lambda m: f"lose_life({m.group(1)})"),
@@ -61,11 +63,24 @@ COST_PATTERNS = [
     (r"banish (\d+) card", lambda m: f"banish({m.group(1)})"),
 ]
 
-ACTION_PATTERNS = [
-    (r"draw (\d+) card", lambda m: f"draw({m.group(1)})"),
-    (r"special summon", lambda m: 'special_summon(self, to="field", position="defense")'),
-    (r"add .* to your hand", lambda m: 'add_to_hand(target)'),
-]
+
+def _compile_action_patterns() -> List:
+    raw = _load_pattern_dict("action_patterns.json")
+    patterns = []
+    for pat, tmpl in raw.items():
+        def _make_func(t=tmpl):
+            def func(m):
+                params = {"target": "target"}
+                if m.groups():
+                    params.setdefault("n", m.group(1))
+                return t.format(**params)
+            return func
+
+        patterns.append((pat, _make_func()))
+    return patterns
+
+
+ACTION_PATTERNS = _compile_action_patterns()
 
 
 class StoreNameGenerator:
