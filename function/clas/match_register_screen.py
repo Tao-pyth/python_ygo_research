@@ -1,6 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.menu import MDDropdownMenu
-from kivymd.uix.chip import MDChip
+from kivymd.uix.chip import MDChip, MDChooseChip
 from kivymd.uix.dialog import MDDialog
 from function.core.db_handler import DBHandler
 
@@ -11,6 +11,7 @@ class MatchRegisterScreen(MDScreen):
         self.db = DBHandler()
         self.deck_menu = None
         self.tag_chips = []
+        self.tag_container = MDChooseChip()
         self.dialog = None
 
     def on_pre_enter(self, *args):
@@ -47,17 +48,19 @@ class MatchRegisterScreen(MDScreen):
     def _load_tags(self):
         self.ids.tag_box.clear_widgets()
         self.tag_chips = []
+        self.tag_container = MDChooseChip()
+        self.ids.tag_box.add_widget(self.tag_container)
         for tag in self.db.get_all_tags():
-            chip = MDChip(text=tag, check=True)
-            self.ids.tag_box.add_widget(chip)
+            chip = MDChip(text=tag)
+            self.tag_container.add_widget(chip)
             self.tag_chips.append(chip)
 
     def add_new_tag(self):
         tag = self.ids.new_tag_field.text.strip()
         if tag:
             self.db.add_tag(tag)
-            chip = MDChip(text=tag, check=True)
-            self.ids.tag_box.add_widget(chip)
+            chip = MDChip(text=tag)
+            self.tag_container.add_widget(chip)
             self.tag_chips.append(chip)
             self.ids.new_tag_field.text = ""
 
