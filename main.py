@@ -29,6 +29,7 @@ from function.clas.card_detail_screen import CardDetailScreen
 from function.clas.card_effect_edit_screen import CardEffectEditScreen
 from function.clas.config_screen import ConfigScreen
 from function.core.config_handler import ConfigHandler
+from function.clas.match_register_screen import MatchRegisterScreen
 
 # Load configuration handler
 config_handler = ConfigHandler()
@@ -73,9 +74,6 @@ class MenuScreen(MDScreen):
         )
         self.changelog_dialog.open()
 
-class MatchRegisterScreen(MDScreen):
-    def change_screen(self, screen_name):
-        self.manager.current = screen_name
 
 class StatsScreen(MDScreen):
     def change_screen(self, screen_name):

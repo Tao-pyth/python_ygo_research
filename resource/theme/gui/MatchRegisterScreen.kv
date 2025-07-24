@@ -6,9 +6,95 @@
         padding: dp(20)
 
         MDLabel:
-            text: '[試合データ登録画面]'
+            text: '[試合結果登録]'
             halign: 'center'
 
-        MDRaisedButton:
-            text: '戻る'
-            on_release: root.change_screen('menu')
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDTextField:
+                id: deck_field
+                hint_text: '使用デッキ'
+                readonly: True
+            MDRaisedButton:
+                id: deck_select_btn
+                text: '選択'
+                size_hint_x: None
+                width: dp(80)
+                on_release: root.open_deck_menu()
+
+        MDLabel:
+            text: '対戦相手デッキタグ'
+            size_hint_y: None
+            height: dp(24)
+
+        ScrollView:
+            size_hint_y: None
+            height: dp(80)
+            MDBoxLayout:
+                id: tag_box
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: self.minimum_height
+                adaptive_height: True
+                spacing: dp(4)
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDTextField:
+                id: new_tag_field
+                hint_text: '新規タグ'
+            MDRaisedButton:
+                text: '追加'
+                size_hint_x: None
+                width: dp(80)
+                on_release: root.add_new_tag()
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDLabel:
+                text: '結果'
+                size_hint_x: None
+                width: dp(40)
+            MDCheckbox:
+                id: win_cb
+                on_active: root.on_win_checkbox(*args)
+            MDLabel:
+                text: '勝ち'
+                size_hint_x: None
+                width: dp(40)
+            MDCheckbox:
+                id: lose_cb
+                on_active: root.on_lose_checkbox(*args)
+            MDLabel:
+                text: '負け'
+                size_hint_x: None
+                width: dp(40)
+
+        MDTextField:
+            id: note_field
+            hint_text: '備考 (任意)'
+            size_hint_y: None
+            height: dp(100)
+            multiline: True
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDRaisedButton:
+                text: '登録'
+                size_hint_x: 0.5
+                md_bg_color: 0.2, 0.6, 0.2, 1
+                on_release: root.register_match()
+            MDRaisedButton:
+                text: '戻る'
+                size_hint_x: 0.5
+                md_bg_color: 0.7, 0.2, 0.2, 1
+                on_release: root.change_screen('menu')
+
