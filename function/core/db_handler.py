@@ -50,6 +50,27 @@ class DBHandler:
         );
         """)
 
+        self.cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS opponent_tags (
+            name TEXT PRIMARY KEY
+        );
+        """
+        )
+
+        self.cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS match_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            deck_name TEXT,
+            opponent_tags TEXT,
+            result TEXT,
+            note TEXT,
+            timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+        )
+
         self.conn.commit()
 
     def get_cards_by_deck(self, deck_name):
@@ -248,4 +269,26 @@ class DBHandler:
         """
         self.cursor.execute("SELECT 1 FROM cards_info WHERE cid = ?", (cid,))
         return self.cursor.fetchone() is not None
+
+    def get_all_tags(self):
+        """登録済みの対戦相手デッキタグを取得"""
+        self.cursor.execute("SELECT name FROM opponent_tags ORDER BY name")
+        return [row[0] for row in self.cursor.fetchall()]
+
+    def add_tag(self, tag_name):
+        """タグを追加（既存なら無視）"""
+        self.cursor.execute(
+            "INSERT OR IGNORE INTO opponent_tags (name) VALUES (?)", (tag_name,)
+        )
+        self.conn.commit()
+
+    def add_match_result(self, deck_name, tags, result, note=""):
+        """試合結果を登録"""
+        tags_str = ",".join(tags)
+        self.cursor.execute(
+            "INSERT INTO match_results (deck_name, opponent_tags, result, note) "
+            "VALUES (?, ?, ?, ?)",
+            (deck_name, tags_str, result, note),
+        )
+        self.conn.commit()
 
