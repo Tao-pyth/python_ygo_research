@@ -48,9 +48,13 @@
         orientation: 'vertical'
 
         # タイトル領域（15%）
-        MDTopAppBar:
-            id: app_bar
-            title: "カード情報取得"
+        BoxLayout:
+            size_hint_y: 1.5
+            padding: 10
+            MDLabel:
+                text: "カード情報取得"
+                halign: "center"
+                font_style: "H5"
 
         # タブ（60%）
         MDTabs:
