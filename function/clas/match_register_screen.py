@@ -109,3 +109,5 @@ class MatchRegisterScreen(MDScreen):
             self.dialog.dismiss()
         self.dialog = MDDialog(title=title, text=text)
         self.dialog.open()
+    def go_back(self, instance):
+        self.manager.current = "menu"
