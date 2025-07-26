@@ -1,6 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.menu import MDDropdownMenu
-from kivymd.uix.chip import MDChip, MDChooseChip
+from kivymd.uix.chip import MDChip
 from kivymd.uix.dialog import MDDialog
 from function.core.db_handler import DBHandler
 
@@ -11,7 +11,6 @@ class MatchRegisterScreen(MDScreen):
         self.db = DBHandler()
         self.deck_menu = None
         self.tag_chips = []
-        self.tag_container = MDChooseChip()
         self.dialog = None
 
     def on_pre_enter(self, *args):
@@ -48,11 +47,12 @@ class MatchRegisterScreen(MDScreen):
     def _load_tags(self):
         self.ids.tag_box.clear_widgets()
         self.tag_chips = []
-        self.tag_container = MDChooseChip()
-        self.ids.tag_box.add_widget(self.tag_container)
+
         for tag in self.db.get_all_tags():
             chip = MDChip(text=tag)
-            self.tag_container.add_widget(chip)
+            chip.state = "normal"
+            chip.bind(on_release=self._on_chip_toggle)
+            self.ids.tag_box.add_widget(chip)
             self.tag_chips.append(chip)
 
     def add_new_tag(self):
@@ -60,9 +60,19 @@ class MatchRegisterScreen(MDScreen):
         if tag:
             self.db.add_tag(tag)
             chip = MDChip(text=tag)
-            self.tag_container.add_widget(chip)
+            chip.state = "normal"
+            chip.bind(on_release=self._on_chip_toggle)
+            self.ids.tag_box.add_widget(chip)
             self.tag_chips.append(chip)
             self.ids.new_tag_field.text = ""
+
+    def _on_chip_toggle(self, chip):
+        if chip.state == "down":
+            chip.state = "normal"
+            chip.icon = ""
+        else:
+            chip.state = "down"
+            chip.icon = "check"
 
     def on_win_checkbox(self, instance, value):
         if value:
@@ -83,13 +93,14 @@ class MatchRegisterScreen(MDScreen):
         if not result:
             self._show_dialog("エラー", "勝敗を選択してください")
             return
-        tags = [chip.text for chip in self.tag_chips if chip.active]
+        tags = [chip.text for chip in self.tag_chips if chip.state == "down"]
         note = self.ids.note_field.text.strip()
         self.db.add_match_result(deck, tags, result, note)
         self._show_dialog("登録完了", "試合結果を登録しました")
         self.ids.note_field.text = ""
         for chip in self.tag_chips:
-            chip.active = False
+            chip.state = "normal"
+            chip.icon = ""
         self.ids.win_cb.active = False
         self.ids.lose_cb.active = False
 
