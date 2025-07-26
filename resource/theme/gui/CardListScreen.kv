@@ -39,12 +39,12 @@
                 id: add_button
                 text: '追加'
                 size_hint_x: 0.3
-                md_bg_color: 0.2, 0.6, 0.2, 1
+                md_bg_color: app.theme_cls.primary_color
                 on_release: root.add_card_to_deck(self)
 
         MDRaisedButton:
             id: back_button
             text: '戻る'
             size_hint_y: 0.1
-            md_bg_color: 0.7, 0.2, 0.2, 1
+            md_bg_color: app.theme_cls.accent_color
             on_release: root.go_back(self)

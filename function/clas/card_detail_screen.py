@@ -1,5 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.chip import MDChip
+from kivymd.app import MDApp
 from function.core.db_handler import DBHandler
 from function.core.effect_dsl_generator import generate_effect_yaml
 import os
@@ -32,6 +33,9 @@ class CardDetailScreen(MDScreen):
         usage_box.clear_widgets()
         for deck, count in self.db.get_deck_usage_for_card(card_name):
             chip = MDChip(text=f"{deck} x{count}")
+            app = MDApp.get_running_app()
+            chip.text_color = app.theme_cls.text_color
+            chip.md_bg_color = app.theme_cls.accent_color
             usage_box.add_widget(chip)
 
     def save_scores(self):

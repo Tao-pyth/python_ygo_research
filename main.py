@@ -89,6 +89,7 @@ class DeckAnalyzerApp(MDApp):
         cfg = self.config_handler.config
         self.theme_cls.primary_palette = cfg.get("theme_color", "Blue")
         self.theme_cls.theme_style = cfg.get("theme_style", "Light")
+        self.theme_cls.accent_palette = cfg.get("accent_color", "Amber")
         sm = MDScreenManager()
         sm.add_widget(MenuScreen(name="menu"))
         sm.add_widget(CardInfoScreen(name="card_info"))  # ← 追加
