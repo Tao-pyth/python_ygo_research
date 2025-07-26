@@ -42,9 +42,7 @@
                 md_bg_color: app.theme_cls.primary_color
                 on_release: root.add_card_to_deck(self)
 
-        MDRaisedButton:
-            id: back_button
-            text: '戻る'
-            size_hint_y: 0.1
-            md_bg_color: app.theme_cls.accent_color
-            on_release: root.go_back(self)
+        MDBottomAppBar:
+            MDToolbar:
+                type: "bottom"
+                left_action_items: [["arrow-left", lambda x: root.go_back(x)]]

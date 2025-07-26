@@ -9,6 +9,7 @@
             text: '[統計表示画面]'
             halign: 'center'
 
-        MDRaisedButton:
-            text: '戻る'
-            on_release: root.change_screen('menu')
+        MDBottomAppBar:
+            MDToolbar:
+                type: "bottom"
+                left_action_items: [["arrow-left", lambda x: root.change_screen('menu')]]

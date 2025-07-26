@@ -27,23 +27,12 @@
             size_hint_y: None
             height: dp(40)
 
-        BoxLayout:
-            size_hint_y: None
-            height: dp(48)
-            spacing: dp(10)
-            MDRaisedButton:
-                text: '読込'
-                on_release: root.reload_yaml()
-            MDRaisedButton:
-                text: '保存'
-                on_release: root.save_yaml()
-            MDRaisedButton:
-                text: 'インポート'
-                on_release: root.import_yaml()
-            MDRaisedButton:
-                text: 'エクスポート'
-                on_release: root.export_yaml()
-            MDRaisedButton:
-                text: '戻る'
-                md_bg_color: app.theme_cls.accent_color
-                on_release: app.root.current = 'card_detail'
+        MDBottomAppBar:
+            MDToolbar:
+                type: "bottom"
+                left_action_items:
+                    [["arrow-left", lambda x: setattr(app.root, 'current', 'card_detail')],
+                     ["reload", lambda x: root.reload_yaml()],
+                     ["content-save", lambda x: root.save_yaml()],
+                     ["upload", lambda x: root.import_yaml()],
+                     ["download", lambda x: root.export_yaml()]]
