@@ -12,6 +12,7 @@ class MatchRegisterScreen(MDScreen):
         self.db = DBHandler()
         self.deck_menu = None
         self.tag_chips = []
+        self.selected_tags = set()
         self.dialog = None
 
     def on_pre_enter(self, *args):
@@ -48,6 +49,8 @@ class MatchRegisterScreen(MDScreen):
     def _load_tags(self):
         self.ids.tag_box.clear_widgets()
         self.tag_chips = []
+        self.selected_tags = set()
+        self.ids.opponent_tag_field.text = ""
 
         for tag in self.db.get_all_tags():
             chip = MDChip(text=tag)
@@ -77,9 +80,12 @@ class MatchRegisterScreen(MDScreen):
         if chip.state == "down":
             chip.state = "normal"
             chip.icon = ""
+            self.selected_tags.discard(chip.text)
         else:
             chip.state = "down"
             chip.icon = "check"
+            self.selected_tags.add(chip.text)
+        self.ids.opponent_tag_field.text = ",".join(sorted(self.selected_tags))
 
     def on_win_checkbox(self, instance, value):
         if value:
@@ -100,7 +106,7 @@ class MatchRegisterScreen(MDScreen):
         if not result:
             self._show_dialog("エラー", "勝敗を選択してください")
             return
-        tags = [chip.text for chip in self.tag_chips if chip.state == "down"]
+        tags = list(self.selected_tags)
         note = self.ids.note_field.text.strip()
         self.db.add_match_result(deck, tags, result, note)
         self._show_dialog("登録完了", "試合結果を登録しました")
@@ -108,6 +114,8 @@ class MatchRegisterScreen(MDScreen):
         for chip in self.tag_chips:
             chip.state = "normal"
             chip.icon = ""
+        self.selected_tags.clear()
+        self.ids.opponent_tag_field.text = ""
         self.ids.win_cb.active = False
         self.ids.lose_cb.active = False
 
