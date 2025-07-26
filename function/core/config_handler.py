@@ -16,6 +16,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "font_size_base": 16,
     "theme_color": "Blue",
     "theme_style": "Light",
+    "accent_color": "Amber",
 }
 
 DEFAULT_CONFIG_PATH = os.path.join("resource", "json", "config.json")

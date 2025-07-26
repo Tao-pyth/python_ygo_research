@@ -23,7 +23,7 @@
             MDRaisedButton:
                 text: 'デッキを作成'
                 size_hint_x: 0.2
-                md_bg_color: 0.4, 0.4, 0.6, 1
+                md_bg_color: app.theme_cls.primary_color
                 on_press: root.create_deck(self)
             MDIconButton:
                 icon: 'refresh'
@@ -51,7 +51,7 @@
             MDRaisedButton:
                 text: 'CSVからインポート'
                 size_hint_x: 0.2
-                md_bg_color: 0.3, 0.6, 0.3, 1
+                md_bg_color: app.theme_cls.primary_color
                 on_press: root.import_deck_from_csv(self)
 
         MDBoxLayout:
@@ -62,10 +62,10 @@
             MDRaisedButton:
                 text: '戻る'
                 size_hint_x: 0.5
-                md_bg_color: 0.7, 0.2, 0.2, 1
+                md_bg_color: app.theme_cls.accent_color
                 on_press: root.go_back(self)
             MDRaisedButton:
                 text: '全てのカードを見る'
                 size_hint_x: 0.5
-                md_bg_color: 0.2, 0.6, 0.2, 1
+                md_bg_color: app.theme_cls.primary_color
                 on_press: root.show_all_cards(self)

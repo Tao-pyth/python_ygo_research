@@ -1,6 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.chip import MDChip
+from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from function.core.db_handler import DBHandler
 
@@ -50,6 +51,9 @@ class MatchRegisterScreen(MDScreen):
 
         for tag in self.db.get_all_tags():
             chip = MDChip(text=tag)
+            app = MDApp.get_running_app()
+            chip.text_color = app.theme_cls.text_color
+            chip.md_bg_color = app.theme_cls.accent_color
             chip.state = "normal"
             chip.bind(on_release=self._on_chip_toggle)
             self.ids.tag_box.add_widget(chip)
@@ -60,6 +64,9 @@ class MatchRegisterScreen(MDScreen):
         if tag:
             self.db.add_tag(tag)
             chip = MDChip(text=tag)
+            app = MDApp.get_running_app()
+            chip.text_color = app.theme_cls.text_color
+            chip.md_bg_color = app.theme_cls.accent_color
             chip.state = "normal"
             chip.bind(on_release=self._on_chip_toggle)
             self.ids.tag_box.add_widget(chip)
