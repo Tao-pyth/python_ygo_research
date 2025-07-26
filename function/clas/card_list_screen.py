@@ -31,7 +31,7 @@ class CardListScreen(MDScreen):
 
     def load_deck(self, deck_name):
         self.current_deck_name = deck_name
-        self.ids.title_label.text = f"デッキ: {deck_name} のカード一覧"
+        self.ids.app_bar.title = f"デッキ: {deck_name} のカード一覧"
         self.ids.grid.clear_widgets()
         cards = self.db.get_cards_by_deck(deck_name)
         for idx, (card_name, count) in enumerate(cards):
@@ -62,7 +62,7 @@ class CardListScreen(MDScreen):
 
     def load_all_cards(self):
         self.current_deck_name = None
-        self.ids.title_label.text = "全カード一覧"
+        self.ids.app_bar.title = "全カード一覧"
         self.ids.grid.clear_widgets()
         all_cards = self.db.get_all_card_names()
         for idx, card_name in enumerate(all_cards):
