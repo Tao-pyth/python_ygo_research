@@ -20,7 +20,7 @@ class CardDetailScreen(MDScreen):
     def load_card(self, card_name):
         self.card_name = card_name
         info = self.db.get_full_card_info(card_name) or {}
-        self.ids.name_label.text = card_name
+        self.ids.app_bar.title = card_name
         self.ids.field_score.text = str(info.get("field_score", 0))
         self.ids.hand_score.text = str(info.get("hand_score", 0))
         self.ids.grave_score.text = str(info.get("grave_score", 0))
