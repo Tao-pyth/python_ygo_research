@@ -102,31 +102,9 @@
                 orientation: 'vertical'
                 size_hint_x: 2
 
-        # ボタン領域（15%）
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: 1
-            BoxLayout:
-                size_hint_x: 2
-            BoxLayout:
-                size_hint_x: 1
-                MDRaisedButton:
-                    pos_hint:{"center_x": .5, "center_y": .5}
-                    text: "戻る"
-                    md_bg_color: app.theme_cls.accent_color
-                    on_release: root.manager.current = 'menu'
-            BoxLayout:
-                size_hint_x: 4
-            BoxLayout:
-                size_hint_x: 1
-                MDRaisedButton:
-                    pos_hint:{"center_x": .5, "center_y": .5}
-                    text: "取得する"
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release: root.on_retrieve_pressed()
-                    id: retrieve_button
-            BoxLayout:
-                size_hint_x: 2
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: 0.1
+        MDBottomAppBar:
+            MDToolbar:
+                type: "bottom"
+                left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'menu')]]
+                right_action_items: [["play", lambda x: root.on_retrieve_pressed()]]
+                id: retrieve_button

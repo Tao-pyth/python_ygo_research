@@ -54,18 +54,8 @@
                 md_bg_color: app.theme_cls.primary_color
                 on_press: root.import_deck_from_csv(self)
 
-        MDBoxLayout:
-            id: bottom_row
-            orientation: 'horizontal'
-            spacing: 10
-            size_hint_y: 0.1
-            MDRaisedButton:
-                text: '戻る'
-                size_hint_x: 0.5
-                md_bg_color: app.theme_cls.accent_color
-                on_press: root.go_back(self)
-            MDRaisedButton:
-                text: '全てのカードを見る'
-                size_hint_x: 0.5
-                md_bg_color: app.theme_cls.primary_color
-                on_press: root.show_all_cards(self)
+        MDBottomAppBar:
+            MDToolbar:
+                type: "bottom"
+                left_action_items: [["arrow-left", lambda x: root.go_back(x)]]
+                right_action_items: [["format-list-bulleted", lambda x: root.show_all_cards(x)]]
