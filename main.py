@@ -8,7 +8,6 @@ from kivy.lang import Builder
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.dialog import MDDialog
-from kivy.properties import StringProperty
 
 import logging
 import os
