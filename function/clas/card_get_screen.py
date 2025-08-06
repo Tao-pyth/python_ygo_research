@@ -1,5 +1,5 @@
 import threading
-import time, os
+import os
 import logging
 from function.core.logging_config import setup_logging
 from kivy.clock import Clock
