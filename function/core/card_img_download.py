@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 
 
 class CardImgDownload:
-    def __init__(self,
-                 db_handler: DBHandler,
-                 chromedriver_path=r'external_resource/chromedriver-win32/chromedriver.exe',
-                 save_dir='external_resource/image',
-                 persist: bool = False):
-        self.db_handler = db_handler
+    def __init__(
+        self,
+        chromedriver_path=r'external_resource/chromedriver-win32/chromedriver.exe',
+        save_dir='external_resource/image',
+        persist: bool = False,
+    ):
         self.chromedriver_path = chromedriver_path
         self.save_dir = save_dir
         self.last_saved_card_name = ""
@@ -128,9 +128,10 @@ class CardImgDownload:
             return None
 
         cid = "cid" + cid_match.group(1)
-        if self.db_handler.cid_exists(cid):
-            logger.debug(f"{cid} はすでに登録済みです。スキップ。")
-            return self.db_handler.get_card_name_by_cid(cid)  # ← card_name を返して登録継続
+        with DBHandler() as db:
+            if db.cid_exists(cid):
+                logger.debug(f"{cid} はすでに登録済みです。スキップ。")
+                return db.get_card_name_by_cid(cid)  # ← card_name を返して登録継続
 
         data = {}
         for lang in ["ja", "en"]:
@@ -180,15 +181,16 @@ class CardImgDownload:
                     driver.quit()
 
         # DB登録（ja/en両方取得後）
-        self.db_handler.upsert_card_info(
-            cid=cid,
-            name_ja=data.get("name_ja", ""),
-            name_en=data.get("name_en", ""),
-            text_ja=data.get("card_text_ja", ""),
-            text_en=data.get("card_text_en", ""),
-            info_ja=data.get("card_info_ja", ""),
-            info_en=data.get("card_info_en", ""),
-            image_path=data.get("image_path", "")
-        )
+        with DBHandler() as db:
+            db.upsert_card_info(
+                cid=cid,
+                name_ja=data.get("name_ja", ""),
+                name_en=data.get("name_en", ""),
+                text_ja=data.get("card_text_ja", ""),
+                text_en=data.get("card_text_en", ""),
+                info_ja=data.get("card_info_ja", ""),
+                info_en=data.get("card_info_en", ""),
+                image_path=data.get("image_path", ""),
+            )
 
         return self.last_saved_card_name

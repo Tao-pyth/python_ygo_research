@@ -10,7 +10,6 @@ import os
 class DeckManagerScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = DBHandler()
         self.dialog = None
         self.current_import_deck = None
 
@@ -19,7 +18,8 @@ class DeckManagerScreen(MDScreen):
 
     def refresh_deck_list(self):
         self.ids.deck_buttons_layout.clear_widgets()
-        decks = self.db.get_all_decks()
+        with DBHandler() as db:
+            decks = db.get_all_decks()
         for deck in decks:
             row = MDBoxLayout(orientation="horizontal", spacing=5, size_hint_y=None, height=dp(48))
 
@@ -51,13 +51,15 @@ class DeckManagerScreen(MDScreen):
     def create_deck(self, instance):
         name = self.ids.new_deck_input.text.strip()
         if name:
-            self.db.add_deck(name)
+            with DBHandler() as db:
+                db.add_deck(name)
             self.ids.new_deck_input.text = ""
             self.refresh_deck_list()
             self.show_dialog("デッキを追加しました")
 
     def delete_deck(self, name):
-        self.db.delete_deck(name)
+        with DBHandler() as db:
+            db.delete_deck(name)
         if self.current_import_deck == name:
             self.current_import_deck = None
         self.refresh_deck_list()
@@ -83,7 +85,8 @@ class DeckManagerScreen(MDScreen):
                 for row in reader:
                     if len(row) == 2:
                         name, count = row[0].strip(), int(row[1])
-                        self.db.add_card(self.current_import_deck, name, count)
+                        with DBHandler() as db:
+                            db.add_card(self.current_import_deck, name, count)
             self.show_dialog("CSVからインポートしました")
         except Exception as e:
             self.show_dialog(f"エラー: {e}")
