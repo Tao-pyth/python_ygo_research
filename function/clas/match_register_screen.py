@@ -9,7 +9,6 @@ from function.core.db_handler import DBHandler
 class MatchRegisterScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = DBHandler()
         self.deck_menu = None
         self.tag_chips = []
         self.selected_tags = set()
@@ -20,7 +19,8 @@ class MatchRegisterScreen(MDScreen):
         self._load_tags()
 
     def _load_decks(self):
-        decks = self.db.get_all_decks()
+        with DBHandler() as db:
+            decks = db.get_all_decks()
         menu_items = [
             {
                 "text": name,
@@ -52,7 +52,9 @@ class MatchRegisterScreen(MDScreen):
         self.selected_tags = set()
         self.ids.opponent_tag_field.text = ""
 
-        for tag in self.db.get_all_tags():
+        with DBHandler() as db:
+            tags = db.get_all_tags()
+        for tag in tags:
             chip = MDChip(text=tag)
             app = MDApp.get_running_app()
             chip.text_color = app.theme_cls.text_color
@@ -65,7 +67,8 @@ class MatchRegisterScreen(MDScreen):
     def add_new_tag(self):
         tag = self.ids.new_tag_field.text.strip()
         if tag:
-            self.db.add_tag(tag)
+            with DBHandler() as db:
+                db.add_tag(tag)
             chip = MDChip(text=tag)
             app = MDApp.get_running_app()
             chip.text_color = app.theme_cls.text_color
@@ -108,7 +111,8 @@ class MatchRegisterScreen(MDScreen):
             return
         tags = list(self.selected_tags)
         note = self.ids.note_field.text.strip()
-        self.db.add_match_result(deck, tags, result, note)
+        with DBHandler() as db:
+            db.add_match_result(deck, tags, result, note)
         self._show_dialog("登録完了", "試合結果を登録しました")
         self.ids.note_field.text = ""
         for chip in self.tag_chips:

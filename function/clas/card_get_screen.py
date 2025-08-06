@@ -25,8 +25,7 @@ class DeckURLTab(BoxLayout, MDTabsBase):
 class CardInfoScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db_handler = DBHandler()
-        self.downloader = CardImgDownload(db_handler=self.db_handler, persist=True)
+        self.downloader = CardImgDownload(persist=True)
         self.dialog = None
         self._is_downloading = False
         self.mode = "keyword"
@@ -81,9 +80,10 @@ class CardInfoScreen(MDScreen):
                         if not deck_name:
                             self._show_dialog("エラー", "デッキ名が空です。")
                             return
-                        if deck_name in self.db_handler.get_all_decks():
-                            self._show_dialog("重複", f"デッキ名『{deck_name}』は既に存在します。別名を指定してください。")
-                            return
+                        with DBHandler() as db:
+                            if deck_name in db.get_all_decks():
+                                self._show_dialog("重複", f"デッキ名『{deck_name}』は既に存在します。別名を指定してください。")
+                                return
                         self._card_list = []
                     self._process_url(deck_url)
                     if current_tab.ids.register_deck_checkbox.active:
@@ -98,23 +98,22 @@ class CardInfoScreen(MDScreen):
         if not urls:
             self._update_status("URLが無効かカードが見つかりません。")
             return
-        for i, detail_url in enumerate(urls, 1):
-            self._update_status(f"{i}/{len(urls)} を処理中...")
-            card_name = self.downloader.capture_card_image(detail_url)
-            if card_name:
-                self._update_last_saved(card_name)
-                cid = self.db_handler.get_cid_by_card_name(card_name)
-                if cid:
-                    image_path = f"external_resource/image/{cid}.png"
-                    self._update_last_saved_image(image_path)
-                self._update_last_saved(card_name)
-                if self.mode == "deck" and hasattr(self, "_card_list"):
-                    self._card_list.append(card_name)
+        with DBHandler() as db:
+            for i, detail_url in enumerate(urls, 1):
+                self._update_status(f"{i}/{len(urls)} を処理中...")
+                card_name = self.downloader.capture_card_image(detail_url)
+                if card_name:
+                    self._update_last_saved(card_name)
+                    cid = db.get_cid_by_card_name(card_name)
+                    if cid:
+                        image_path = f"external_resource/image/{cid}.png"
+                        self._update_last_saved_image(image_path)
+                    self._update_last_saved(card_name)
+                    if self.mode == "deck" and hasattr(self, "_card_list"):
+                        self._card_list.append(card_name)
         self._show_dialog("完了", "カードの取得を完了しました。")
 
     def _register_deck(self, deck_name):
-        self.db_handler.create_deck(deck_name)
-
         # deck_url を再取得
         deck_tab = self._tab_map.get("deck")
         deck_url = deck_tab.ids.deck_url_input.text.strip()
@@ -123,11 +122,13 @@ class CardInfoScreen(MDScreen):
         logger.debug(f"=== 登録処理開始 for deck: {deck_name} ===")
         cid_counter = self.downloader.get_card_counts_from_page(deck_url)
         logger.debug(f"取得したカードCIDと枚数: {cid_counter}")
-        for cid, count in cid_counter.items():
-            card_name = self.db_handler.get_card_name_by_cid(f"cid{cid}")
-            logger.debug(f"cid {cid} → card_name: {card_name}")
-            if card_name:
-                self.db_handler.add_card(deck_name, card_name, count)
+        with DBHandler() as db:
+            db.create_deck(deck_name)
+            for cid, count in cid_counter.items():
+                card_name = db.get_card_name_by_cid(f"cid{cid}")
+                logger.debug(f"cid {cid} → card_name: {card_name}")
+                if card_name:
+                    db.add_card(deck_name, card_name, count)
 
         self._update_status(f"デッキ「{deck_name}」として登録しました。")
 

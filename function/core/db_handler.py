@@ -6,14 +6,35 @@ from function.core.logging_config import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
+
 class DBHandler:
     def __init__(self, db_path='external_resource/db/ygo_data.db'):
-        """
-        データベース接続を初期化し、必要なテーブルを作成
-        """
-        self.conn = sqlite3.connect(db_path, check_same_thread=False)
+        """DBへの一時的な接続を管理するハンドラ"""
+        self.db_path = db_path
+        self.conn = None
+        self.cursor = None
+
+    def open(self):
+        """データベースへ接続しテーブルを初期化"""
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.initialize_tables()
+        return self
+
+    def close(self):
+        """データベース接続をクローズ"""
+        if self.cursor:
+            self.cursor.close()
+            self.cursor = None
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+
+    def __enter__(self):
+        return self.open()
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
 
     def initialize_tables(self):
         """

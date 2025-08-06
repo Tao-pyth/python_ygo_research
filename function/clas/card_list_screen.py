@@ -12,13 +12,13 @@ import os
 class CardListScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = DBHandler()
         self.current_deck_name = None
         self.yaml_dir = os.path.join("external_resource", "effect_yaml")
 
     def _create_status_label(self, card_name):
         """Return an MDLabel showing DSL status for the card."""
-        cid = self.db.get_cid_by_card_name(card_name)
+        with DBHandler() as db:
+            cid = db.get_cid_by_card_name(card_name)
         text = ""
         if cid:
             path = os.path.join(self.yaml_dir, f"{cid}.yaml")
@@ -33,7 +33,8 @@ class CardListScreen(MDScreen):
         self.current_deck_name = deck_name
         self.ids.title_label.text = f"デッキ: {deck_name} のカード一覧"
         self.ids.grid.clear_widgets()
-        cards = self.db.get_cards_by_deck(deck_name)
+        with DBHandler() as db:
+            cards = db.get_cards_by_deck(deck_name)
         for idx, (card_name, count) in enumerate(cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
 
@@ -64,7 +65,8 @@ class CardListScreen(MDScreen):
         self.current_deck_name = None
         self.ids.title_label.text = "全カード一覧"
         self.ids.grid.clear_widgets()
-        all_cards = self.db.get_all_card_names()
+        with DBHandler() as db:
+            all_cards = db.get_all_card_names()
         for idx, card_name in enumerate(all_cards):
             bg_color = get_color_from_hex("#f5f5f5") if idx % 2 == 0 else get_color_from_hex("#ffffff")
             label = MDLabel(text=card_name, halign="left")
@@ -87,14 +89,16 @@ class CardListScreen(MDScreen):
             return
 
         if card_name and count > 0 and self.current_deck_name:
-            self.db.add_card(self.current_deck_name, card_name, count)
+            with DBHandler() as db:
+                db.add_card(self.current_deck_name, card_name, count)
             self.load_deck(self.current_deck_name)
             self.ids.name_input.text = ""
             self.ids.count_input.text = ""
 
     def delete_card_from_deck(self, card_name):
         if self.current_deck_name:
-            self.db.remove_card(self.current_deck_name, card_name)
+            with DBHandler() as db:
+                db.remove_card(self.current_deck_name, card_name)
             self.load_deck(self.current_deck_name)
 
     def open_card_detail(self, card_name):
@@ -104,7 +108,8 @@ class CardListScreen(MDScreen):
 
     def change_card_count(self, card_name, delta):
         if self.current_deck_name:
-            self.db.adjust_card_count(self.current_deck_name, card_name, delta)
+            with DBHandler() as db:
+                db.adjust_card_count(self.current_deck_name, card_name, delta)
             self.load_deck(self.current_deck_name)
 
     def save_card_scores(self, card_name, field, hand, grave):

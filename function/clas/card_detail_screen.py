@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 class CardDetailScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = DBHandler()
         self.card_name = ""
 
     def load_card(self, card_name):
         self.card_name = card_name
-        info = self.db.get_full_card_info(card_name) or {}
+        with DBHandler() as db:
+            info = db.get_full_card_info(card_name) or {}
         self.ids.name_label.text = card_name
         self.ids.field_score.text = str(info.get("field_score", 0))
         self.ids.hand_score.text = str(info.get("hand_score", 0))
@@ -31,7 +31,9 @@ class CardDetailScreen(MDScreen):
         self.ids.card_image.reload()
         usage_box = self.ids.deck_usage
         usage_box.clear_widgets()
-        for deck, count in self.db.get_deck_usage_for_card(card_name):
+        with DBHandler() as db:
+            usage = db.get_deck_usage_for_card(card_name)
+        for deck, count in usage:
             chip = MDChip(text=f"{deck} x{count}")
             app = MDApp.get_running_app()
             chip.text_color = app.theme_cls.text_color
@@ -43,14 +45,16 @@ class CardDetailScreen(MDScreen):
             f = int(self.ids.field_score.text)
             h = int(self.ids.hand_score.text)
             g = int(self.ids.grave_score.text)
-            self.db.set_card_scores(self.card_name, field=f, hand=h, grave=g)
+            with DBHandler() as db:
+                db.set_card_scores(self.card_name, field=f, hand=h, grave=g)
         except ValueError as e:
             logger.error(f"Invalid score value: {e}")
         self.manager.current = "card_list"
 
     def open_effect_editor(self):
         """Generate temporary YAML and open the effect edit screen."""
-        info = self.db.get_full_card_info(self.card_name)
+        with DBHandler() as db:
+            info = db.get_full_card_info(self.card_name)
         if not info:
             return
         cid = info.get("cid")
