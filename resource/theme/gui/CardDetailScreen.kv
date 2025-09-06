@@ -64,8 +64,19 @@
                 height: self.minimum_height
                 spacing: 5
 
-        MDBottomAppBar:
-            MDToolbar:
-                type: "bottom"
-                left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'card_list')]]
-                right_action_items: [["cog", lambda x: root.open_effect_editor()], ["content-save", lambda x: root.save_scores()]]
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: 10
+            MDRaisedButton:
+                text: '戻る'
+                on_release: root.manager.current = 'card_list'
+                md_bg_color: app.theme_cls.accent_color
+            MDRaisedButton:
+                text: 'カード効果を設定する'
+                on_release: root.open_effect_editor()
+                md_bg_color: app.theme_cls.primary_light
+            MDRaisedButton:
+                text: '保存'
+                on_release: root.save_scores()
+                md_bg_color: app.theme_cls.primary_color
