@@ -56,8 +56,16 @@
                 size_hint_x: 0.5
                 on_release: root.toggle_theme_style()
 
-        MDBottomAppBar:
-            MDToolbar:
-                type: "bottom"
-                left_action_items: [["arrow-left", lambda x: root.go_back()]]
-                right_action_items: [["backup-restore", lambda x: root.reset_config()], ["content-save", lambda x: root.save_config()]]
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            spacing: dp(10)
+            MDRaisedButton:
+                text: '保存'
+                on_release: root.save_config()
+            MDRaisedButton:
+                text: 'リセット'
+                on_release: root.reset_config()
+            MDRaisedButton:
+                text: '戻る'
+                on_release: root.go_back()
